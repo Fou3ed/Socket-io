@@ -114,8 +114,8 @@ export const getAppById = async (req, res) => {
  * @method put
  */
 export const putApp = async (req, res) => {
-    const _id = req.params.id
-    if (!validator.isMongoId(_id)) {
+    const id = req.params.id
+    if (!validator.isMongoId(id)) {
         res.status(400).send({
             'error': 'there is no such app(wrong id)'
         })
@@ -126,7 +126,7 @@ export const putApp = async (req, res) => {
             plan: req.body.plan,
             message_retention_hours: req.body.message_retention_hours,
             max_message_length: req.body.max_message_length,
-
+              
         }
         const check = Joi.object({
             app_name: Joi.string().min(4).max(256),
@@ -145,12 +145,11 @@ export const putApp = async (req, res) => {
             })
         } else {
             try {
-                const result = await app.findByIdAndUpdate({
-                    _id
-                }, {
+                const result = await app.findByIdAndUpdate(
+                    id
+                , {
                     $set: req.body
                 })
-                console.log(_id)
                 if (result) {
                     res.status(202).json({
                         message: "success",
@@ -172,6 +171,9 @@ export const putApp = async (req, res) => {
     }
 
 }
+
+
+ 
 /**
  * DELETE APP
  *  @route /app/:id/
@@ -191,7 +193,7 @@ export const deleteAPP = async (req, res) => {
                 res.status(202).json({
                     message: "success",
                 })
-            }else {
+            } else {
                 res.status(400).send({
                     'error': 'there is no such app'
                 })

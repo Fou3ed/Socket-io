@@ -8,7 +8,10 @@ import helmet from "helmet";
 import { createServer } from "http";
 import { instrument } from "@socket.io/admin-ui"
 import router from "../Socket-io/src/routes/appRoutes.js";
+import routerC from '../Socket-io/src/routes/connectionRoutes.js'
 import dbServer from "./DB.js";
+import process from 'node:process';
+
 process.on("uncaughtException", (err) => {
     console.log(err.name);
     console.log(err.message);
@@ -47,6 +50,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(helmet());
 app.use("/app", router)
+app.use("/connection", routerC)
 app.use(cookieParser());
 
 
