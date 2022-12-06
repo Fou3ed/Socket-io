@@ -7,7 +7,7 @@ const logger = debug('namespace')
  * @method Get 
  *
  */
-const getConnection = async (req, res) => {
+export const getConnection = async (req, res) => {
     try {
         const result = await connection.find();
         if (result.length > 0) {

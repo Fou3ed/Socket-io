@@ -9,6 +9,7 @@ import { createServer } from "http";
 import { instrument } from "@socket.io/admin-ui"
 import router from "../Socket-io/src/routes/appRoutes.js";
 import routerC from '../Socket-io/src/routes/connectionRoutes.js'
+import routerCNV from '../Socket-io/src/routes/conversationsRoutes.js'
 import dbServer from "./DB.js";
 import process from 'node:process';
 
@@ -51,6 +52,7 @@ app.use(cors(corsOptions));
 app.use(helmet());
 app.use("/app", router)
 app.use("/connection", routerC)
+app.use ("/conversations",routerCNV)
 app.use(cookieParser());
 
 

@@ -9,7 +9,7 @@ const logger = debug('namespace')
  * @method Get 
  *
  */
-const getApps = async (req, res) => {
+export const getApps = async (req, res) => {
     try {
         const result = await app.find();
         if (result.length > 0) {
@@ -86,7 +86,6 @@ export const postApps = async (req, res) => {
  * @method get
  * 
  */
-
 export const getAppById = async (req, res) => {
     const id = req.params.id
     if (!validator.isMongoId(id)) {
@@ -126,7 +125,7 @@ export const putApp = async (req, res) => {
             plan: req.body.plan,
             message_retention_hours: req.body.message_retention_hours,
             max_message_length: req.body.max_message_length,
-              
+
         }
         const check = Joi.object({
             app_name: Joi.string().min(4).max(256),
@@ -146,10 +145,9 @@ export const putApp = async (req, res) => {
         } else {
             try {
                 const result = await app.findByIdAndUpdate(
-                    id
-                , {
-                    $set: req.body
-                })
+                    id, {
+                        $set: req.body
+                    })
                 if (result) {
                     res.status(202).json({
                         message: "success",
@@ -171,9 +169,6 @@ export const putApp = async (req, res) => {
     }
 
 }
-
-
- 
 /**
  * DELETE APP
  *  @route /app/:id/
@@ -206,5 +201,3 @@ export const deleteAPP = async (req, res) => {
     }
 
 }
-
-export default getApps

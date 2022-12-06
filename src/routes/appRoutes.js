@@ -1,5 +1,5 @@
 import express from "express"
-import getApps, {
+import {getApps, 
     deleteAPP,
     getAppById,
     postApps,

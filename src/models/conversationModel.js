@@ -45,7 +45,8 @@ const conversationSchema = new Schema({
         description: 'the array of [users] registered as operators of the channel'
     },
     owner_id: {
-        type: Number,
+        type:Number,
+        ref:'user',
         required: true,
         description: 'ID of conversation s owner (user)'
     },
