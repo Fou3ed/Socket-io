@@ -11,8 +11,8 @@ import router from "../Socket-io/src/routes/appRoutes.js";
 import routerC from '../Socket-io/src/routes/connectionRoutes.js'
 import routerCNV from '../Socket-io/src/routes/conversationsRoutes.js'
 import routerMember from '../Socket-io/src/routes/convMemberRoutes.js'
-import routerUser from '../Socket-io/src/routes/userRoutes'
-
+import routerUser from '../Socket-io/src/routes/userRoutes.js'
+import routerMessage from '../Socket-io/src/routes/messageRoutes.js'
 
 import dbServer from "./DB.js";
 import process from 'node:process';
@@ -54,11 +54,14 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(helmet());
+// Routes 
 app.use("/app", router)
 app.use("/connection", routerC)
 app.use ("/conversations",routerCNV)
 app.use ("/members",routerMember)
 app.use ("/users",routerUser)
+app.use ("/message",routerMessage)
+
 
 
 app.use(cookieParser());

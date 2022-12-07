@@ -1,4 +1,4 @@
-import message from '../models/messageModel'
+import message from '../models/messageModel.js'
 import debug from "debug"
 import Joi from "joi"
 import validator from 'validator'
@@ -62,9 +62,9 @@ export const getMessage = async (req, res) => {
  * createMessage : create message
  * @route /message
  * @method post
- * @body  type ,conversation_id,user,mentioned_users,readBy,is_removed,message,data,attachments,parent_message_id,parent_message_info,location,origin
+ * @body  type,conversation_id,user,mentioned_users,readBy,is_removed,message,data,attachments,parent_message_id,parent_message_info,location,origin
  */
-export const postMember = async (req, res) => {
+export const postMessage = async (req, res) => {
     const data = {
         type: req.body.type,
         conversation_id: req.body.conversation_id,
@@ -72,7 +72,6 @@ export const postMember = async (req, res) => {
         mentioned_users: req.body.mentioned_users,
         readBy: req.body.readBy,
         message: req.body.message,
-        parent_message_info: req.body.type,
         origin: req.body.origin
 
     }
@@ -83,7 +82,6 @@ export const postMember = async (req, res) => {
         mentioned_users: Joi.string().required(),
         readBy: Joi.string().required(),
         message: Joi.string().required().min(1).max(256),
-        parent_message_info: Object(),
         origin: Joi.string().required()
     })
     const {
@@ -134,7 +132,6 @@ export const putMessage= async (req, res) => {
             mentioned_users: req.body.mentioned_users,
             readBy: req.body.readBy,
             message: req.body.message,
-            parent_message_info: req.body.type,
             origin: req.body.origin
         }
         const check = Joi.object({
@@ -144,7 +141,6 @@ export const putMessage= async (req, res) => {
             mentioned_users: Joi.string().required(),
             readBy: Joi.string().required(),
             message: Joi.string().required().min(1).max(256),
-            parent_message_info: Object(),
             origin: Joi.string().required()
 
         })
