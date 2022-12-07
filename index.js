@@ -13,7 +13,7 @@ import routerCNV from '../Socket-io/src/routes/conversationsRoutes.js'
 import routerMember from '../Socket-io/src/routes/convMemberRoutes.js'
 import routerUser from '../Socket-io/src/routes/userRoutes.js'
 import routerMessage from '../Socket-io/src/routes/messageRoutes.js'
-
+import routerRole from '../Socket-io/src/routes/roleRoutes.js'
 import dbServer from "./DB.js";
 import process from 'node:process';
 
@@ -61,6 +61,7 @@ app.use ("/conversations",routerCNV)
 app.use ("/members",routerMember)
 app.use ("/users",routerUser)
 app.use ("/message",routerMessage)
+app.use ("/role",routerRole)
 
 
 
