@@ -1,27 +1,27 @@
-import app from '../models/appModel.js'
+import conversationMember from '../models/convMembersModel.js'
 import debug from "debug"
 import Joi from "joi"
 import validator from 'validator'
 const logger = debug('namespace')
+
+
 /**
- *  Get all apps 
- * @route /app
+ *  GetMembers :get members of conversation
+ * @route /members
  * @method Get 
- *
  */
-export const getApps = async (req, res) => {
+export const GetMembers = async (req, res) => {
     try {
-        const result = await app.find();
+        const result = await conversationMember.find();
         if (result.length > 0) {
             res.status(200).json({
                 message: "success",
                 data: result
             })
-
         } else {
             res.status(200).json({
                 message: "success",
-                data: "there are no apps"
+                data: "there are no such conversation Member "
             })
         }
     } catch (err) {
@@ -32,22 +32,50 @@ export const getApps = async (req, res) => {
     }
 }
 /**
- *  ADD NEW APP
- * @route /app
- * @method post
- * @body  app_name: , api_token: ,  plan: , message_retention_hours:  ,  max_message_length: 
+ * getConversation : getMember : get member data
+ * @route /conversation/:id
+ * @method Get
  */
-export const postApps = async (req, res) => {
+export const getMember = async (req, res) => {
+    const id = req.params.id
+    if (!validator.isMongoId(id)) {
+        res.status(400).send({
+            'error': 'there is no such conversation member(wrong id) '
+        })
+    } else {
+        try {
+            const result = await conversationMember.findById(id);
+                res.status(200).json({
+                    message: "success",
+                    data: result
+                })  
+        } catch (err) {
+            console.log(err)
+            logger(err)
+            res.status(400).send({
+                message: "fail retrieving data"
+            })
+        }
+    }
+}
+/**
+ * addMembers:add members to conversation
+ * @route /member
+ * @method post
+ * @body 
+ */
+export const postMember = async (req, res) => {
     const data = {
-        app_name: req.body.app_name,
-        api_token: req.body.api_token,
-        plan: req.body.plan
+        conversation: req.body.conversation_id,
+        user:req.body.user_id,
+        name:req.body.conversation_name
+        
     }
     const check = Joi.object({
-        app_name: Joi.string().required().min(4).max(256),
-        api_token: Joi.string().required(),
-        plan: Joi.string().required().min(4).max(256),
-
+        conversation:Joi.string().required(),
+        user:Joi.string().required,
+        name: Joi.string().required().min(4).max(48),
+    
     })
     const {
         error
@@ -57,82 +85,48 @@ export const postApps = async (req, res) => {
             'error': error.details[0].message
         })
     } else {
-        console.log("bch nzid check token  lenna")
-
         try {
-            const result = await app.create(req.body);
+            const result = await conversationMember.create(req.body);
             if (result) {
                 res.status(201).json({
                     message: "success",
-                    data: result
+                    date: result
                 })
             } else {
                 res.status(400).json({
-                    "error": 'failed to create new app. Try again'
+                    "error": 'failed to create new conversation'
                 })
             }
         } catch (err) {
             res.status(400).json({
-                "error": 'some error occurred.try again'
+                'error': 'some error occurred.try again'
             })
             logger(err)
-
+            console.log(err)
         }
     }
 }
 /**
- * GET APP BY id
- * @route /app/:id/
- * @method get
- * 
- */
-export const getAppById = async (req, res) => {
-    const id = req.params.id
-    if (!validator.isMongoId(id)) {
-        res.status(400).send({
-            'error': 'there is no such app(wrong id) '
-        })
-    } else {
-        try {
-            const result = await app.findById(id)
-            res.status(200).json({
-                message: "success",
-                data: result
-            })
-        } catch (err) {
-            logger(err)
-            res.status(400).send({
-                'error': 'some error occurred . try again'
-            })
-        }
-    }
-}
-/**
- * UPDATE APP BY ID
- * @route /app/:id/
+ * updateMember : update member
+ * @route /member/:id
  * @method put
  */
-export const putApp = async (req, res) => {
+export const putMember = async (req, res) => {
     const id = req.params.id
     if (!validator.isMongoId(id)) {
         res.status(400).send({
-            'error': 'there is no such app(wrong id)'
+            'error': 'there is no such member (wrong id)'
         })
     } else {
         const data = {
-            app_name: req.body.app_name,
-            api_token: req.body.api_token,
-            plan: req.body.plan,
-            message_retention_hours: req.body.message_retention_hours,
-            max_message_length: req.body.max_message_length,
-
+            conversation: req.body.conversation_id,
+            user:req.body.user_id,
+            name:req.body.conversation_name
         }
         const check = Joi.object({
-            app_name: Joi.string().min(4).max(256),
-            api_token: Joi.string().required(),
-            plan: Joi.string().required(),
-            message_retention_hours: Joi.number(),
-            max_message_length: Joi.number()
+            conversation:Joi.string().required(),
+            user:Joi.string().required,
+            name: Joi.string().required().min(4).max(48),
 
         })
         const {
@@ -144,7 +138,7 @@ export const putApp = async (req, res) => {
             })
         } else {
             try {
-                const result = await app.findByIdAndUpdate(
+                const result = await conversationMember.findByIdAndUpdate(
                     id, {
                         $set: req.body
                     })
@@ -170,34 +164,38 @@ export const putApp = async (req, res) => {
 
 }
 /**
- * DELETE APP
- *  @route /app/:id/
- *  @method put
+ * deleteMember : delete member
+ * @route /member/:id
+ * @method delete
  */
-export const deleteAPP = async (req, res) => {
+export const deleteMember = async (req, res) => {
     const id = req.params.id
     if (!validator.isMongoId(id)) {
         res.status(400).send({
-            'error': 'there is no such app(wrong id) '
+            'error': 'there is no such member(wrong id) '
         })
     } else {
         try {
-
-            const result = await app.findByIdAndDelete(id)
+            const result = await conversationMember.findByIdAndDelete(id)
             if (result) {
                 res.status(202).json({
                     message: "success",
                 })
             } else {
                 res.status(400).send({
-                    'error': 'there is no such app'
+                    'error': 'there is no such conversation'
                 })
             }
         } catch (err) {
             res.status(400).send({
-                'error': 'some error. Try again '
+                'error': 'some error occurred. Try again '
             })
         }
     }
-
 }
+
+
+
+
+
+

@@ -44,7 +44,7 @@ export const getConversation = async (req, res) => {
         })
     } else {
         try {
-            const result = await conversation.findById();
+            const result = await conversation.findById(id);
                 res.status(200).json({
                     message: "success",
                     data: result
