@@ -16,13 +16,13 @@ const userSchema = new Schema({
     },
     profile_url: {
         type: String,
-        required: true,
+        required: false,
         description: 'the URL of a use profile image'
     },
     access_token: {
         type: String,
         required: true,
-        description: 'an opaque string tha identifies the user'
+        description: 'an opaque string that identifies the user'
     },
     role: {
         type: Object,
