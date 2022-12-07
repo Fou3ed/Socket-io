@@ -11,23 +11,27 @@ const messageSchema = new Schema({
     },
     conversation_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'conversation'
+        ref: 'conversation',
+        required:true,
     },
     user: {
-        type: Object,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
         required: true,
         description: 'The user who sent the message'
     },
     mentioned_users: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
+        ref:'user',
+        description:'an array of users mentioned in the message '
     }],
     readBy: {
-        type: Object,
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'user',    
         required: true,
         description: 'Read-only.List of the user Ids who have already read and received this message.Does not include the sender.Example:["123456","654321"]'
     },
-    is_removed: {
+    is_removed: {   
         type: Boolean,
         required: false,
         description: 'Indicates whether the message is removed from the channel'
@@ -60,12 +64,14 @@ const messageSchema = new Schema({
         description: 'The files contained n the message.This property is empty for any text messages '
     },
     parent_message_id: {
-        type: Number,
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'message',
         required: false,
         description: 'the unique ID of a threads parent message.This property is only retrieved if the message is a reply '
     },
     parent_message_info: {
-        type: Object,
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'message',
         required: false,
         description: 'the information of the threads parent message including the text,user information,and message type.this property is only retrieved if the message is a reply'
     },
@@ -75,12 +81,10 @@ const messageSchema = new Schema({
         description: 'An array of two numbers which represent the longitude and latitude if this location respectively.[51.481083,-3.178306]'
     },
     origin: {
-        type: "string",
+        type: String,
         required: true,
         description: 'Determines how this message was sent.respectively,Via a web browser (or mobile Webview),via the REST API,via reply-to-email'
-
     }
-
 })
 
 export default mongoose.model("message", messageSchema)
