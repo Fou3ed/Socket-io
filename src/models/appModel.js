@@ -10,7 +10,8 @@ const AppSchema = new Schema({
         description: "the name of the application "
     },
     api_token: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'connection',
         required: true,
         description: "the credential of the application for accessing the chat API"
     },

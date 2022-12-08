@@ -65,11 +65,7 @@ app.use ("/message",routerMessage)
 app.use ("/role",routerRole)
 app.use ("/media",routerMedia)
 
-
-
-
 app.use(cookieParser());
-
 
 io.on("connection", (socket) => {
     console.log(socket)

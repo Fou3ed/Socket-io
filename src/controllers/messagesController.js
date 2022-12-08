@@ -195,7 +195,6 @@ export const MarkMessageAsRead = async (req, res) => {
             const result = await message.findByIdAndUpdate(
                 id, {
                     $set: {
-                        ...req.body,
                         read: Date.now()
                     }
                 })

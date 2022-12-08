@@ -59,8 +59,13 @@ const userSchema = new Schema({
         type: Object,
         required: false,
         description: 'A JSON object to store additional user information such as phone number,email or a long description of the user'
+    },
+    status: {
+        type: Number,
+        required: true,
+        description: 'user status'
     }
-    
+
 })
 
 export default mongoose.model("user", userSchema)
