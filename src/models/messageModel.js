@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
-
 const Schema = mongoose.Schema
-
 
 const messageSchema = new Schema({
     type: {
@@ -12,7 +10,7 @@ const messageSchema = new Schema({
     conversation_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'conversation',
-        required:true,
+        required: true,
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -22,16 +20,16 @@ const messageSchema = new Schema({
     },
     mentioned_users: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref:'user',
-        description:'an array of users mentioned in the message '
+        ref: 'user',
+        description: 'an array of users mentioned in the message '
     }],
     readBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:'user',    
+        ref: 'user',
         required: true,
         description: 'Read-only.List of the user Ids who have already read and received this message.Does not include the sender.Example:["123456","654321"]'
     },
-    is_removed: {   
+    is_removed: {
         type: Boolean,
         required: false,
         description: 'Indicates whether the message is removed from the channel'
@@ -54,8 +52,7 @@ const messageSchema = new Schema({
     },
     updated_at: {
         type: Date,
-        required: true,
-        default: Date.now,
+        required: false,
         description: 'the time when '
     },
     attachments: {
@@ -65,13 +62,13 @@ const messageSchema = new Schema({
     },
     parent_message_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:'message',
+        ref: 'message',
         required: false,
         description: 'the unique ID of a threads parent message.This property is only retrieved if the message is a reply '
     },
     parent_message_info: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:'message',
+        ref: 'message',
         required: false,
         description: 'the information of the threads parent message including the text,user information,and message type.this property is only retrieved if the message is a reply'
     },
@@ -84,6 +81,17 @@ const messageSchema = new Schema({
         type: String,
         required: true,
         description: 'Determines how this message was sent.respectively,Via a web browser (or mobile Webview),via the REST API,via reply-to-email'
+    },
+    read: {
+        type: Date,
+        required: false,
+        description: "mark message as read "
+    },
+    delivered: {
+        type: Date,
+        required: false,
+        description: 'Mark message when it s delivered '
+
     }
 })
 

@@ -3,8 +3,6 @@ import debug from "debug"
 import Joi from "joi"
 import validator from 'validator'
 const logger = debug('namespace')
-
-
 /**
  *  GetMessages :get get messages
  * @route /messages
@@ -118,7 +116,7 @@ export const postMessage = async (req, res) => {
  * @route /message/:id
  * @method put
  */
-export const putMessage= async (req, res) => {
+export const putMessage = async (req, res) => {
     const id = req.params.id
     if (!validator.isMongoId(id)) {
         res.status(400).send({
@@ -132,7 +130,7 @@ export const putMessage= async (req, res) => {
             mentioned_users: req.body.mentioned_users,
             readBy: req.body.readBy,
             message: req.body.message,
-            origin: req.body.origin
+            origin: req.body.origin,
         }
         const check = Joi.object({
             type: Joi.string().required(),
@@ -155,7 +153,10 @@ export const putMessage= async (req, res) => {
             try {
                 const result = await message.findByIdAndUpdate(
                     id, {
-                        $set: req.body
+                        $set: {
+                            ...req.body,
+                            updated_at: Date.now()
+                        }
                     })
                 if (result) {
                     res.status(202).json({
@@ -177,6 +178,142 @@ export const putMessage= async (req, res) => {
         }
     }
 
+}
+/**
+ * MarkMessageAsRead : mark a message as read
+ * @route /message/read/:id
+ * @method put
+ */
+export const MarkMessageAsRead = async (req, res) => {
+    const id = req.params.id
+    if (!validator.isMongoId(id)) {
+        res.status(400).send({
+            'error': 'there is no such member (wrong id)'
+        })
+    } else {
+        try {
+            const result = await message.findByIdAndUpdate(
+                id, {
+                    $set: {
+                        ...req.body,
+                        read: Date.now()
+                    }
+                })
+            if (result) {
+                res.status(202).json({
+                    message: "success",
+                    data: result
+                })
+            } else {
+                res.status(400).send({
+                    'error': 'wrong values'
+                })
+            }
+
+        } catch (err) {
+            res.status(400).send({
+                'error': 'some error occurred. Try again (verify your params values ) '
+            })
+            logger(err)
+        }
+    }
+}
+
+/**
+ *  GetUnreadMessagesCount :get unread messages count 
+ * @route /message
+ * @method Get 
+ */
+export const GetUnreadMessagesCount = async (req, res) => {
+    try {
+        const result = await message.find({
+            read: null
+        });
+        if (result.length > 0) {
+            res.status(200).json({
+                message: "success",
+                data: result.length
+            })
+        } else {
+            res.status(200).json({
+                message: "success",
+                data: "there are no  unread messages"
+            })
+        }
+    } catch (err) {
+        logger(err)
+        res.status(400).send({
+            message: "fail retrieving data ",
+        })
+    }
+}
+
+/**
+ * markMessageAsDelivered : mark a message as read
+ * @route /message/read/:id
+ * @method put
+ */
+export const markMessageAsDelivered = async (req, res) => {
+    const id = req.params.id
+    if (!validator.isMongoId(id)) {
+        res.status(400).send({
+            'error': 'there is no such member (wrong id)'
+        })
+    } else {
+        try {
+            const result = await message.findByIdAndUpdate(
+                id, {
+                    $set: {
+                        delivered: Date.now()
+                    }
+                })
+            if (result) {
+                res.status(202).json({
+                    message: "success",
+                    data: result
+                })
+            } else {
+                res.status(400).send({
+                    'error': 'wrong values'
+                })
+            }
+
+        } catch (err) {
+            res.status(400).send({
+                'error': 'some error occurred. Try again (verify your params values ) '
+            })
+            logger(err)
+        }
+    }
+}
+/**
+ *  GetUnreadMessages :get unread messages
+ * @route /message
+ * @method Get 
+ */
+export const GetUnreadMessages = async (req, res) => {
+    try {
+        const result = await message.find({
+            read: null
+        });
+        if (result.length > 0) {
+            console.log(result)
+            res.status(200).json({
+                message: "success",
+                data: result
+            })
+        } else {
+            res.status(200).json({
+                message: "success",
+                data: "there are no such message "
+            })
+        }
+    } catch (err) {
+        logger(err)
+        res.status(400).send({
+            message: "fail retrieving data ",
+        })
+    }
 }
 /**
  * deleteMessage : delete message

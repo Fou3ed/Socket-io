@@ -21,7 +21,7 @@ const userSchema = new Schema({
     },
     access_token: {
         type: String,
-        required: true,
+        required: false,
         description: 'an opaque string that identifies the user'
     },
     role: {
@@ -60,6 +60,7 @@ const userSchema = new Schema({
         required: false,
         description: 'A JSON object to store additional user information such as phone number,email or a long description of the user'
     }
+    
 })
 
 export default mongoose.model("user", userSchema)
