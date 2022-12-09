@@ -34,11 +34,10 @@ const membersSchema = new Schema({
     },
     updated_at:{
         type:Date,
-        required:true,
+        required:false,
         default:Date.now,
         description:"Date & time when a record was updated"
     }
-
 })
 
 export default mongoose.model("member", membersSchema)

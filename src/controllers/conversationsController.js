@@ -108,7 +108,6 @@ export const postConversation = async (req, res) => {
                 'error': 'some error occurred.try again'
             })
             logger(err)
-            console.log(err)
         }
     }
 }

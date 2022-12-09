@@ -3,7 +3,6 @@ const setupChatSocket = function (socket, clients, pubClient, io) {
     socket.on('add-listener', async function (data) {
         let id = parseInt(data.id);
         if (!clients.find((client) => client.socketId === socket.id)) {
-            console.log('update undif', clients)
             let user = await User.findOne({
                 where: {
                     id: id
@@ -36,7 +35,7 @@ const setupChatSocket = function (socket, clients, pubClient, io) {
     socket.on('react-on-msg', function (data) {
         io.to(data.channelId).emit('react-msg', data);
     });
-    socket.on('unreact-on-msg', function (data) {
+    socket.on('unReact-on-msg', function (data) {
         io.to(data.channelId).emit('unreact-msg', data);
     });
     socket.on('typing-message', function (data) {
@@ -101,7 +100,7 @@ const setupChatSocket = function (socket, clients, pubClient, io) {
     socket.on('react-on-pmsg', function (data) {
         io.to(data.roomId).emit('react-pmsg', data);
     });
-    socket.on('unreact-on-pmsg', function (data) {
+    socket.on('unReact-on-pmsg', function (data) {
         io.to(data.roomId).emit('unreact-pmsg', data);
     });
     socket.on('typing-pmsg', function (data) {
@@ -120,7 +119,7 @@ const setupChatSocket = function (socket, clients, pubClient, io) {
     socket.on('update_users', update_users);
     //Removing the socket on disconnect
     socket.on('disconnect', async function () {
-        console.log('socketid', socket.id);
+        console.log('socketId', socket.id);
         let client = clients.find((client) => client.socketId === socket.id);
         console.log('client disconnected', client);
         if (client) {

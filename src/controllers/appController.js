@@ -57,8 +57,6 @@ export const postApps = async (req, res) => {
             'error': error.details[0].message
         })
     } else {
-        console.log("bch nzid check token  lenna")
-
         try {
             const result = await app.create(req.body);
             if (result) {

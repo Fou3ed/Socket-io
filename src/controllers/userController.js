@@ -178,7 +178,6 @@ export const putUser = async (req, res) => {
                         'error': 'wrong values'
                     })
                 }
-
             } catch (err) {
                 res.status(400).send({
                     'error': 'some error occurred. Try again (verify your params values ) '
@@ -333,7 +332,7 @@ export const banUser = async (req, res) => {
 }
 
 /**
- * banUser : ban a user
+ * unBanUser : unBan a user
  * @route /user/unban/:id
  * @method put
  */

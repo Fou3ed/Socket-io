@@ -67,13 +67,11 @@ export const getMember = async (req, res) => {
 export const postMember = async (req, res) => {
     const data = {
         conversation: req.body.conversation_id,
-        user:req.body.user_id,
         name:req.body.conversation_name
         
     }
     const check = Joi.object({
         conversation:Joi.string().required(),
-        user:Joi.string().required,
         name: Joi.string().required().min(4).max(48),
     
     })
@@ -102,7 +100,6 @@ export const postMember = async (req, res) => {
                 'error': 'some error occurred.try again'
             })
             logger(err)
-            console.log(err)
         }
     }
 }
@@ -119,13 +116,10 @@ export const putMember = async (req, res) => {
         })
     } else {
         const data = {
-            conversation: req.body.conversation_id,
-            user:req.body.user_id,
             name:req.body.conversation_name
+
         }
         const check = Joi.object({
-            conversation:Joi.string().required(),
-            user:Joi.string().required,
             name: Joi.string().required().min(4).max(48),
 
         })
@@ -140,7 +134,8 @@ export const putMember = async (req, res) => {
             try {
                 const result = await conversationMember.findByIdAndUpdate(
                     id, {
-                        $set: req.body
+                        $set: req.body,
+                        updated_at:Date.now()
                     })
                 if (result) {
                     res.status(202).json({
