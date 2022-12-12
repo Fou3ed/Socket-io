@@ -14,10 +14,8 @@ export const getConversations = async (req, res) => {
     try {
         const result = await conversation.find();
         if (result.length > 0) {
-            res.status(200).json({
-                message: "success",
-                data: result
-            })
+            console.log(result)
+        
         } else {
             res.status(200).json({
                 message: "success",
@@ -36,8 +34,8 @@ export const getConversations = async (req, res) => {
  * @route /conversation/:id
  * @method Get
  */
-export const getConversation = async (req, res) => {
-    const id = req.params.id
+export const getConversation = async (id,req, res) => {
+
     if (!validator.isMongoId(id)) {
         res.status(400).send({
             'error': 'there is no such conversation(wrong id) '
@@ -45,10 +43,8 @@ export const getConversation = async (req, res) => {
     } else {
         try {
             const result = await conversation.findById(id);
-                res.status(200).json({
-                    message: "success",
-                    data: result
-                })  
+            console.log(result)
+           
         } catch (err) {
             console.log(err)
             logger(err)
@@ -62,7 +58,7 @@ export const getConversation = async (req, res) => {
  * createConversation: create conversation
  * @route /conversation
  * @method post
- * @body 
+ * @body name:,channel_url: , conversation_type : , description:,members_count:,max_length_message:,operators:[],owner_id:,last_msg:,unread_messages_count:,permission:{key:value} ,metadata:{"key":"value"}
  */
 export const postConversation = async (req, res) => {
     const data = {
@@ -136,7 +132,7 @@ export const putConversation = async (req, res) => {
         const check = Joi.object({
             name: Joi.string().required().min(4).max(48),
             channel_url: Joi.string().required(),
-            conversation_type: Joi.string().required() , 
+            conversation_type: Joi.string().required(),
             members_count: Joi.number().required().min(1).max(24),
             max_length_message: Joi.number().required().min(4).max(512),
             operators: Joi.array().required(),
@@ -207,9 +203,3 @@ export const deleteConversation = async (req, res) => {
         }
     }
 }
-
-
-
-
-
-

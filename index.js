@@ -17,6 +17,7 @@ import routerRole from '../Socket-io/src/routes/roleRoutes.js'
 import routerMedia from '../Socket-io/src/routes/mediaRoutes.js'
 import dbServer from "./DB.js";
 import process from 'node:process';
+//import {getConversationByIdEvent, getConversationsEvent} from '../Socket-io/src/events/conversationsEvents.js'
 
 process.on("uncaughtException", (err) => {
     console.log(err.name);
@@ -66,6 +67,11 @@ app.use ("/role",routerRole)
 app.use ("/media",routerMedia)
 
 app.use(cookieParser());
+//const id="6390b021dfb49a27e7e3c0a5"
+//getConversationsEvent.emit('getConversations');
+//getConversationByIdEvent.emit('getConversationById',id)
+
+
 
 io.on("connection", (socket) => {
     console.log(socket)

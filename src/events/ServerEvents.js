@@ -1,19 +1,28 @@
-//import { EventEmitter } from 'node:events';
-//class MyEmitter extends EventEmitter {}
+import {
+  EventEmitter
+} from 'node:events';
+import message from '../models/messageModel.js'
 
+class MyEmitter extends EventEmitter {}
+/*onOpen : Websocket connection opened
+ */
+ const onOpenConnection = new MyEmitter();
 
-/**
- * onOpen : Websocket connection opened
- 
-const onOpenConnection = new MyEmitter();
-
-onOpenConnection.on('onOpen', () => {
-
-  console.log('/', getUsers);
+onOpenConnection.on('onOpen', async () => {
+  try {
+    const result =  await message.find();
+    if (result.length > 0) {
+      console.log(result)
+    } else {
+    console.log("ghalet")
+    }
+  } catch (err) {
+    console.log(err)
+  }
 });
-onOpenConnection.emit('onOpen');*/
+export default onOpenConnection
 
-class EventEmitter {
+/*class EventEmitter {
   listeners = {}
   
   addListener(eventName, fn) {
@@ -162,15 +171,4 @@ myEmitter.off('eventOne', c2);
 
 // This will be printed before withTime (as withTime readFile is async)
 console.log(myEmitter.listenerCount('eventOne'));
-console.log(withTime.rawListeners("begin"));
-
-
-
-
-
-
-
-
-
-
-
+console.log(withTime.rawListeners("begin"));*/

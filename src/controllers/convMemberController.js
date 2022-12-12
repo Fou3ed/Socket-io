@@ -73,7 +73,6 @@ export const postMember = async (req, res) => {
     const check = Joi.object({
         conversation:Joi.string().required(),
         name: Joi.string().required().min(4).max(48),
-    
     })
     const {
         error
@@ -156,7 +155,6 @@ export const putMember = async (req, res) => {
             }
         }
     }
-
 }
 /**
  * deleteMember : delete member
