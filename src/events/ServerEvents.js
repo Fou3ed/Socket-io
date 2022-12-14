@@ -1,7 +1,6 @@
 import {
   EventEmitter
 } from 'node:events';
-import message from '../models/messageModel.js'
 
 class MyEmitter extends EventEmitter {}
 /*onOpen : Websocket connection opened
@@ -9,16 +8,7 @@ class MyEmitter extends EventEmitter {}
  const onOpenConnection = new MyEmitter();
 
 onOpenConnection.on('onOpen', async () => {
-  try {
-    const result =  await message.find();
-    if (result.length > 0) {
-      console.log(result)
-    } else {
-    console.log("ghalet")
-    }
-  } catch (err) {
-    console.log(err)
-  }
+  
 });
 export default onOpenConnection
 

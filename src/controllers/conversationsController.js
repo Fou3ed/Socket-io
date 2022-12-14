@@ -15,7 +15,8 @@ export const getConversations = async (req, res) => {
         const result = await conversation.find();
         if (result.length > 0) {
             console.log(result)
-        
+            return result
+
         } else {
             res.status(200).json({
                 message: "success",
@@ -29,12 +30,13 @@ export const getConversations = async (req, res) => {
         })
     }
 }
+
 /**
  * getConversation : get conversation data
  * @route /conversation/:id
  * @method Get
  */
-export const getConversation = async (id,req, res) => {
+export const getConversation = async (id, req, res) => {
 
     if (!validator.isMongoId(id)) {
         res.status(400).send({
@@ -44,7 +46,7 @@ export const getConversation = async (id,req, res) => {
         try {
             const result = await conversation.findById(id);
             console.log(result)
-           
+
         } catch (err) {
             console.log(err)
             logger(err)
@@ -54,6 +56,7 @@ export const getConversation = async (id,req, res) => {
         }
     }
 }
+
 /**
  * createConversation: create conversation
  * @route /conversation
