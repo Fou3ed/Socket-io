@@ -14,7 +14,7 @@ export const getRoles = async (req, res) => {
     try {
         const result = await role.find();
         if (result.length > 0) {
-            res.status(200).json({
+            res.json({
                 message: "success",
                 data: result
             })

@@ -1,4 +1,9 @@
-import {getCnv, printMsg} from './newFn.js' 
+import  {printMsg,getCnv} from './newFn.js' 
+
+
   printMsg()
-  getCnv.emit();
+  getCnv()
+
+  
+  export default printMsg()
 

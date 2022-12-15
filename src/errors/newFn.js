@@ -1,28 +1,13 @@
-import {
-    EventEmitter
-  } from 'node:events';
-  import {
-    
-    getConversations,
-    
-  } from '../controllers/conversationsController.js';
 
-
-export const printMsg= async function(){
-console.log("printMSG")
-
+  export const printMsg = async  ()=> {
+    console.log("mch momken")
 
 }
-  
 
-
-class conversationEmitter extends EventEmitter {}
-
-export const getCnv = (function () {
+export const getCnv = async ()=>{
     console.log("getCnv")
-  const getConversationsEvent = new conversationEmitter();
-   getConversationsEvent.on('getConversations', async () => {
-    await getConversations()
-   });
+}
 
-})
+export default {printMsg,getCnv}
+
+

@@ -15,8 +15,10 @@ export const getConversations = async (req, res) => {
         const result = await conversation.find();
         if (result.length > 0) {
             console.log(result)
-            return result
-
+                 res.status(200).json({
+                message: "success",
+                data: "there are no conversation"
+            })
         } else {
             res.status(200).json({
                 message: "success",

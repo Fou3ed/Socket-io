@@ -20,8 +20,6 @@ export const getConversationsEvent = new conversationEmitter();
 getConversationsEvent.on('getConversations', async () => {
   await getConversations()
 });
-
-
 /**
  * getConversationByIdEvent :  get a conversation By Id 
  */
@@ -29,6 +27,7 @@ export const getConversationByIdEvent = new conversationEmitter()
 getConversationByIdEvent.on('getConversationById', async (id) => {
   await getConversation(id)
 })
+
 
 /*
  ** onConversationStart : fired when the conversation created
