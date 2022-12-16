@@ -1,6 +1,8 @@
-import conversation from '../models/conversationModel.js'
 
- const getConversations = async () => {
+import conversation from "../models/conversationModel.js"
+
+
+export const getConversations = async () => {
     try {
         const result = await conversation.find();
         if (result.length > 0) {
@@ -11,5 +13,3 @@ import conversation from '../models/conversationModel.js'
        console.log(err)
     }
 }
-
-export default{getConversations}

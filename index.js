@@ -23,7 +23,9 @@ import routerRole from '../Socket-io/src/routes/roleRoutes.js'
 import routerMedia from '../Socket-io/src/routes/mediaRoutes.js'
 import dbServer from "./DB.js";
 import process from 'node:process';
-import {printMsg,getCnv} from "../Socket-io/src/errors/newFn.js"
+//import * as foued from '../Socket-io/src/errors/main.js'
+
+//import {printMsg,getCnv} from "../Socket-io/src/errors/newFn.js"
 
 process.on("uncaughtException", (err) => {
     console.log(err.name);
@@ -76,8 +78,7 @@ app.use("/users", routerUser)
 app.use("/message", routerMessage)
 app.use("/role", routerRole)
 app.use("/media", routerMedia)
-printMsg()
-getCnv()
+//foued.test()
 //app.use(main())
 //getConversationsEvent.emit('getConversations')
 //getCnv()
