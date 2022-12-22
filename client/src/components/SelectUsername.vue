@@ -2,12 +2,13 @@
   <div class="select-username">
     <form @submit.prevent="onSubmit">
       <input v-model="username" placeholder="Your username..." />
-      <button :disabled="!isValid">Send</button>
+      <button :disabled="!isValid"  >Send</button>
     </form>
   </div>
 </template>
 
 <script>
+
 export default {
   name: "SelectUsername",
   data() {

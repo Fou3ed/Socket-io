@@ -116,7 +116,7 @@ app.use(cors(corsOptions));
 app.use(helmet());
 /**
  * REST API ROUTES 
-  */
+ */
 app.use("/app", router)
 app.use("/connection", routerC)
 app.use("/conversations", routerCNV)
@@ -234,7 +234,6 @@ io.on("connection", (socket) => {
     socket.to(to).to(socket.userID).emit("private message", message);
     messageStore.saveMessage(message);
   });
-
   // notify users upon disconnection
   socket.on("disconnect", async () => {
     const matchingSockets = await io.in(socket.userID).allSockets();
@@ -254,7 +253,7 @@ io.on("connection", (socket) => {
 
 /**
  * monitoring
- *  */  
+ *  */
 instrument(io, {
   auth: false,
   mode: "development",

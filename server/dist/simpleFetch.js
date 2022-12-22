@@ -1,7 +1,7 @@
 'use-strict'
 /* eslint-disable no-unused-vars */
 
-class simpleFetch {
+class actions {
   /**
    * get all conversations 
    *  */
@@ -345,4 +345,4 @@ class simpleFetch {
 
 
 //create an instance 
-const foued = new simpleFetch()
+const foued = new actions()

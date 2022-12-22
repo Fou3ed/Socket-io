@@ -10,6 +10,7 @@
     </div>
     <div v-if="user.hasNewMessages" class="new-messages">!</div>
   </div>
+  
 </template>
 
 <script>

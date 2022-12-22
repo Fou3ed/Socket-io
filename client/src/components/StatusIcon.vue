@@ -1,7 +1,6 @@
 <template>
   <i class="icon" :class="{ connected: connected }"></i>
 </template>
-
 <script>
 export default {
   name: "StatusIcon",
