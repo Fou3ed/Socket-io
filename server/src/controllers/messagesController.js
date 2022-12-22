@@ -10,7 +10,8 @@ const logger = debug('namespace')
  */
 export const GetMessages = async (req, res) => {
     try {
-        const result = await message.find();
+
+        const result = await message.find().populate('conversation');
         if (result.length > 0) {
             res.status(200).json({
                 message: "success",
@@ -248,8 +249,8 @@ export const GetUnreadMessagesCount = async (req, res) => {
 }
 
 /**
- * markMessageAsDelivered : mark a message as read
- * @route /message/read/:id
+ * markMessageAsDelivered : mark a message as delivered
+ * @route /message/delivered/:id
  * @method put
  */
 export const markMessageAsDelivered = async (req, res) => {
@@ -296,7 +297,6 @@ export const GetUnreadMessages = async (req, res) => {
             read: null
         });
         if (result.length > 0) {
-            console.log(result)
             res.status(200).json({
                 message: "success",
                 data: result

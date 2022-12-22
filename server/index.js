@@ -13,19 +13,17 @@ import {
 import {
     instrument
 } from "@socket.io/admin-ui"
-import router from "../Socket-io/src/routes/appRoutes.js";
-import routerC from '../Socket-io/src/routes/connectionRoutes.js'
-import routerCNV from '../Socket-io/src/routes/conversationsRoutes.js'
-import routerMember from '../Socket-io/src/routes/convMemberRoutes.js'
-import routerUser from '../Socket-io/src/routes/userRoutes.js'
-import routerMessage from '../Socket-io/src/routes/messageRoutes.js'
-import routerRole from '../Socket-io/src/routes/roleRoutes.js'
-import routerMedia from '../Socket-io/src/routes/mediaRoutes.js'
+import router from '../server/src/routes/appRoutes.js'
+import routerC from '../server/src/routes/connectionRoutes.js'
+import routerCNV from '../server/src/routes/conversationsRoutes.js'
+import routerMember from '../server/src/routes/convMemberRoutes.js'
+import routerUser from '../server/src/routes/userRoutes.js'
+import routerMessage from '../server/src/routes/messageRoutes.js'
+import routerRole from '../server/src/routes/roleRoutes.js'
+import routerMedia from '../server/src/routes/mediaRoutes.js'
 import dbServer from "./DB.js";
 import process from 'node:process';
-//import * as foued from '../Socket-io/src/errors/main.js'
 
-//import {printMsg,getCnv} from "../Socket-io/src/errors/newFn.js"
 
 process.on("uncaughtException", (err) => {
     console.log(err.name);
@@ -39,6 +37,7 @@ const app = express();
 /**
  *      SERVER INITIALIZATION
  */
+
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
     cors: {
@@ -48,10 +47,12 @@ const io = new Server(httpServer, {
     }
 });
 
+
 app.use(express.json());
 app.use(express.urlencoded({
     extended: true
 }));
+
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
     res.header("Access-Control-Allow-Headers", "*")
@@ -59,6 +60,7 @@ app.use(function (req, res, next) {
 
     next();
 });
+
 const corsOptions = {
     origin: "*",
     header: "*",
@@ -78,29 +80,18 @@ app.use("/users", routerUser)
 app.use("/message", routerMessage)
 app.use("/role", routerRole)
 app.use("/media", routerMedia)
-//foued.test()
-//app.use(main())
-//getConversationsEvent.emit('getConversations')
-//getCnv()
+
+
 app.use(cookieParser());
-//const id="6390b021dfb49a27e7e3c0a5"
-//getConversationsEvent.emit('getConversations');
-//getConversationByIdEvent.emit('getConversationById',id)
-
-
-
-
-
 
 io.on("connection", (socket) => {
     console.log(socket)
 });
-
+// monitoring 
 instrument(io, {
     auth: false,
     mode: "development",
 });
-
 dbServer();
-
 httpServer.listen(process.env.PORT)
+console.log(process.env.PORT)

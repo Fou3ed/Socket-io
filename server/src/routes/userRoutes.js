@@ -8,7 +8,8 @@ import {
     getUserStatus,
     getUsersOnline,
     banUser,
-    unbanUser
+    unbanUser,
+    registerUser
 } from '../controllers/userController.js'
 const router = express.Router()
 
@@ -21,4 +22,5 @@ router.put('/unban/:id', unbanUser)
 router.get('/status/:id', getUserStatus)
 router.get('/online/users', getUsersOnline)
 router.delete('/:id', deleteUser)
+router.get ('/login',registerUser)
 export default router

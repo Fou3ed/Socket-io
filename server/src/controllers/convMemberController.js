@@ -16,7 +16,7 @@ export const GetMembers = async (req, res) => {
         if (result.length > 0) {
             res.status(200).json({
                 message: "success",
-                data: result
+                data: result,
             })
         } else {
             res.status(200).json({
