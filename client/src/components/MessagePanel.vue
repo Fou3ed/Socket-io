@@ -18,7 +18,7 @@
     </ul>
 
     <form @submit.prevent="onSubmit" class="form">
-      <textarea v-model="input" placeholder="Your message..." class="input" />
+      <textarea  v-model="input" placeholder="Your message..." class="input" />
       <button :disabled="!isValid" class="send-button">Send</button>
     </form>
   </div>
@@ -57,6 +57,9 @@ export default {
     isValid() {
       return this.input.length > 0;
     },
+    typing(){
+    this.$emit('typing-pmsg',this.user)
+}
   },
 };
 </script>

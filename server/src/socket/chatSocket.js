@@ -21,10 +21,11 @@ const setupChatSocket = function (socket, clients, pubClient, io) {
     //Add a user to a channel
     socket.on('add-user', function (data) {
         socket.join(data.channelId);
+
     });
     //Channel events
     socket.on('deleted-msg', function (data) {
-        io.to(data.channelId).emit('delete-msg', data);
+        io.to(data.channelId).emit('delete-msg',data);
     });
     socket.on('hidden-msg', function (data) {
         io.to(data.channelId).emit('hide-msg', data);

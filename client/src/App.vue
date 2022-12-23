@@ -29,7 +29,7 @@ export default {
       socket.auth = { username };
       socket.connect();
     },
-  },
+  }, 
   created() {
     const sessionID = localStorage.getItem("sessionID");
 
@@ -48,13 +48,15 @@ export default {
       socket.userID = userID;
     });
 
+
     socket.on("connect_error", (err) => {
       if (err.message === "invalid username") {
         this.usernameAlreadySelected = false;
       }
+      
     });
-  },
- 
+    
+  }, 
   destroyed() {
     socket.off("connect_error");
   },

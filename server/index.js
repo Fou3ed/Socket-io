@@ -249,6 +249,12 @@ io.on("connection", (socket) => {
       });
     }
   });
+
+  socket.on('typing-pmsg', function (data) {
+    io.to(data.roomId).emit('typing-pmsg', data);
+});
+
+
 });
 
 /**
@@ -258,6 +264,7 @@ instrument(io, {
   auth: false,
   mode: "development",
 });
+
 
 dbServer();
 httpServer.listen(process.env.PORT)

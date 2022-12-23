@@ -9,6 +9,7 @@ const socket = io(URL, { autoConnect: false });
 
 /**
  * register a catch-all listener
+ * So that any event received by the client will be printed in the console.
  */
 socket.onAny((event, ...args) => {
   console.log(event, args);
