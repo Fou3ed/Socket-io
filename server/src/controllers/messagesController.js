@@ -11,7 +11,7 @@ const logger = debug('namespace')
 export const GetMessages = async (req, res) => {
     try {
 
-        const result = await message.find().populate('conversation');
+        const result = await message.find();
         if (result.length > 0) {
             res.status(200).json({
                 message: "success",
@@ -24,6 +24,7 @@ export const GetMessages = async (req, res) => {
             })
         }
     } catch (err) {
+        console.log(err)
         logger(err)
         res.status(400).send({
             message: "fail retrieving data ",
@@ -64,33 +65,6 @@ export const getMessage = async (req, res) => {
  * @body  type,conversation_id,user,mentioned_users,readBy,is_removed,message,data,attachments,parent_message_id,parent_message_info,location,origin
  */
 export const postMessage = async (req, res) => {
-    const data = {
-        type: req.body.type,
-        conversation_id: req.body.conversation_id,
-        user: req.body.user,
-        mentioned_users: req.body.mentioned_users,
-        readBy: req.body.readBy,
-        message: req.body.message,
-        origin: req.body.origin
-
-    }
-    const check = Joi.object({
-        type: Joi.string().required(),
-        conversation_id: Joi.string().required(),
-        user: Joi.string().required(),
-        mentioned_users: Joi.string().required(),
-        readBy: Joi.string().required(),
-        message: Joi.string().required().min(1).max(256),
-        origin: Joi.string().required()
-    })
-    const {
-        error
-    } = check.validate(data)
-    if (error) {
-        res.status(400).send({
-            'error': error.details[0].message
-        })
-    } else {
         try {
             const result = await message.create(req.body);
             if (result) {
@@ -111,7 +85,7 @@ export const postMessage = async (req, res) => {
             console.log(err)
         }
     }
-}
+
 /**
  * updateMessage : update message data
  * @route /message/:id
@@ -186,6 +160,7 @@ export const putMessage = async (req, res) => {
  * @method put
  */
 export const MarkMessageAsRead = async (req, res) => {
+    console.log(req.userId)
     const id = req.params.id
     if (!validator.isMongoId(id)) {
         res.status(400).send({
@@ -200,6 +175,7 @@ export const MarkMessageAsRead = async (req, res) => {
                     }
                 })
             if (result) {
+                console.log("tbadlt")
                 res.status(202).json({
                     message: "success",
                     data: result

@@ -26,6 +26,7 @@ const setupChatSocket = function (socket, clients, pubClient, io) {
     //Channel events
     socket.on('deleted-msg', function (data) {
         io.to(data.channelId).emit('delete-msg',data);
+        console.log("deleted-msg")
     });
     socket.on('hidden-msg', function (data) {
         io.to(data.channelId).emit('hide-msg', data);

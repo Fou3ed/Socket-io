@@ -3,18 +3,19 @@
 class MessageStore {
     saveMessage(message) {}
     findMessagesForUser(userID) {}
+        
 }
 
 class InMemoryMessageStore extends MessageStore {
     constructor() {
         super();
         this.messages = [];
-    }
 
+    }
     saveMessage(message) {
         this.messages.push(message);
+        // eslint-disable-next-line no-undef
     }
-
     findMessagesForUser(userID) {
         return this.messages.filter(
             ({
@@ -25,4 +26,4 @@ class InMemoryMessageStore extends MessageStore {
     }
 }
 
-export default  InMemoryMessageStore
+export default InMemoryMessageStore

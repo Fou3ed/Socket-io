@@ -1,7 +1,15 @@
 'use-strict'
 /* eslint-disable no-unused-vars */
 
-class actions {
+class acts{
+  addMsg(data){
+
+  }
+}
+class actions extends acts{
+  constructor() {
+    super()
+  }
   /**
    * get all conversations 
    *  */
@@ -342,7 +350,6 @@ class actions {
 
 }
 
-
+export default actions
 
 //create an instance 
-const foued = new actions()

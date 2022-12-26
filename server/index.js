@@ -1,3 +1,4 @@
+'use-stric'
 import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
@@ -26,8 +27,7 @@ import process from 'node:process';
 import crypto from "crypto"
 import InMemoryMessageStore from "../server/src/constants/messageStore.js";
 import InMemorySessionStore from "../server/src/constants/sessionStore.js";
-
-
+import actions from '../server/dist/simpleFetch.js'
 /**
  * => Calls the express function "express()" and puts new Express application inside the app variable (to start a new Express application).
  *  It's something like you are creating an object of a class. Where "express()" is just like class and app is it's newly created object.
@@ -140,7 +140,7 @@ const sessionStore = new InMemorySessionStore();
  * implement: store all the messages on the server-side.
  */
 const messageStore = new InMemoryMessageStore();
-
+const foued = new actions()
 /***
  * io.use() allows you to specify a function that is called for every new, incoming socket.io connection. It can be used for a wide variety of things such as:
  * Logging,Authentication,Managing sessions,Rate limiting,Connection validation
@@ -172,18 +172,23 @@ io.use((socket, next) => {
 });
 
 io.on("connection", (socket) => {
+  console.log("server : connected")
   // persist session
   sessionStore.saveSession(socket.sessionID, {
     userID: socket.userID,
     username: socket.username,
     connected: true,
   });
+  socket.on('disconnect',()=>{
+    console.log("disconnected")
+  })
 
   // emit session details
   socket.emit("session", {
     sessionID: socket.sessionID,
     userID: socket.userID,
   });
+
 
   // join the "userID" room
   socket.join(socket.userID);
@@ -202,7 +207,15 @@ io.on("connection", (socket) => {
     } else {
       messagesPerUser.set(otherUser, [message]);
     }
+
   });
+
+
+  socket.on('read-msg', function (data) {
+    io.to(data.userID).emit('delete-msg',data);
+    console.log(data)
+});
+
   sessionStore.findAllSessions().forEach((session) => {
     users.push({
       userID: session.userID,
@@ -221,6 +234,7 @@ io.on("connection", (socket) => {
     messages: [],
   });
 
+
   // forward the private message to the right recipient (and to other tabs of the sender)
   socket.on("private message", ({
     content,
@@ -233,7 +247,34 @@ io.on("connection", (socket) => {
     };
     socket.to(to).to(socket.userID).emit("private message", message);
     messageStore.saveMessage(message);
+    let data ={
+      "type":"MESG",
+     "conversation_id":"63907b74266e3b8358516cd1",
+     "user":"6390b306dfb49a27e7e3c0bb",
+     "mentioned_users":"6390b4d54a1ba0044836d613",
+     "readBy":"6390b4d54a1ba0044836d613",
+    "is_removed":false,
+    "message":message.content,
+     "data":"additional message information ",
+     "attachments":{"key":"value"},
+     "parent_message_id":"6390bbb76b96e925c5eb1858",
+     "parent_message_info":"6390bbb76b96e925c5eb1858",
+     "location":"",
+     "origin":"web",
+      "read":null
+    }
+    foued.addMsg(data)
   });
+
+
+
+  socket.on('read-msg',  (data)=> {
+    io.to(data.userId).emit('read-msg', data);
+    foued.readMsg(data.messageId)
+
+    
+});
+
   // notify users upon disconnection
   socket.on("disconnect", async () => {
     const matchingSockets = await io.in(socket.userID).allSockets();
@@ -249,11 +290,6 @@ io.on("connection", (socket) => {
       });
     }
   });
-
-  socket.on('typing-pmsg', function (data) {
-    io.to(data.roomId).emit('typing-pmsg', data);
-});
-
 
 });
 

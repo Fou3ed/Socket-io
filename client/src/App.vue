@@ -12,6 +12,7 @@
 import SelectUsername from "./components/SelectUsername";
 import Chat from "./components/Chat";
 import socket from "./socket";
+import * as foued from './eventFunctions.js'
 export default {
   name: "App",
   components: {
@@ -32,7 +33,6 @@ export default {
   }, 
   created() {
     const sessionID = localStorage.getItem("sessionID");
-
     if (sessionID) {
       this.usernameAlreadySelected = true;
       socket.auth = { sessionID };
@@ -46,15 +46,32 @@ export default {
       localStorage.setItem("sessionID", sessionID);
       // save the ID of the user
       socket.userID = userID;
+      localStorage.setItem("userID", userID);
     });
 
+    socket.emit("deleted-msg",({userID: localStorage.getItem("userID")}))
 
+      socket.on("delete-msg",(data)=>{
+          console.log("lenna",data)
+      })
+
+    socket.on('onConnect',foued.makeConnection)
+    socket.on("onDisconnect",foued.disconnectEventHandler)
+    socket.on('onReconnect',foued.drainEventHandler)
+    
     socket.on("connect_error", (err) => {
       if (err.message === "invalid username") {
         this.usernameAlreadySelected = false;
       }
-      
     });
+
+
+
+
+
+
+
+
     
   }, 
   destroyed() {

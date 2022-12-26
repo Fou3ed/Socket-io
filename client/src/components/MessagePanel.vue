@@ -44,6 +44,7 @@ export default {
     onSubmit() {
       this.$emit("input", this.input);
       this.input = "";
+
     },
     displaySender(message, index) {
       return (
@@ -51,15 +52,14 @@ export default {
         this.user.messages[index - 1].fromSelf !==
           this.user.messages[index].fromSelf
       );
+
     },
   },
   computed: {
     isValid() {
       return this.input.length > 0;
     },
-    typing(){
-    this.$emit('typing-pmsg',this.user)
-}
+
   },
 };
 </script>

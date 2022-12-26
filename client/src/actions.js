@@ -1,9 +1,10 @@
 /* eslint-disable no-undef */
 // Get Request
-button1.addEventListener('click', getReq);
+button1.addEventListener('click', addMsg);
 
-function getReq() {
-  foued.getCnvs()
+function addMsg() {
+  
+  foued.addMsg()
   .then((data) => {
     console.log(data)
     return data;
