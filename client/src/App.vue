@@ -7,12 +7,12 @@
     <chat v-else />
   </div>
 </template>
-
 <script>
-import SelectUsername from "./components/SelectUsername";
+import SelectUsername from "./components/SelectUsername.vue";
 import Chat from "./components/Chat";
 import socket from "./socket";
-import * as foued from './eventFunctions.js'
+import clientEvents from './eventFunctions.js'
+const foued = new clientEvents()
 export default {
   name: "App",
   components: {
@@ -38,7 +38,6 @@ export default {
       socket.auth = { sessionID };
       socket.connect();
     }
-
     socket.on("session", ({ sessionID, userID }) => {
       // attach the session ID to the next reconnection attempts
       socket.auth = { sessionID };
@@ -48,31 +47,17 @@ export default {
       socket.userID = userID;
       localStorage.setItem("userID", userID);
     });
-
-    socket.emit("deleted-msg",({userID: localStorage.getItem("userID")}))
+   // socket.emit("deleted-msg",({userID: localStorage.getItem("userID")}))
+    foued.makeConnection()
 
       socket.on("delete-msg",(data)=>{
           console.log("lenna",data)
       })
-
-    socket.on('onConnect',foued.makeConnection)
-    socket.on("onDisconnect",foued.disconnectEventHandler)
-    socket.on('onReconnect',foued.drainEventHandler)
-    
     socket.on("connect_error", (err) => {
       if (err.message === "invalid username") {
         this.usernameAlreadySelected = false;
       }
     });
-
-
-
-
-
-
-
-
-    
   }, 
   destroyed() {
     socket.off("connect_error");

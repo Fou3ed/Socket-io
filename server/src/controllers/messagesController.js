@@ -24,7 +24,6 @@ export const GetMessages = async (req, res) => {
             })
         }
     } catch (err) {
-        console.log(err)
         logger(err)
         res.status(400).send({
             message: "fail retrieving data ",
@@ -50,7 +49,6 @@ export const getMessage = async (req, res) => {
                 data: result
             })
         } catch (err) {
-            console.log(err)
             logger(err)
             res.status(400).send({
                 message: "fail retrieving data"
@@ -82,7 +80,6 @@ export const postMessage = async (req, res) => {
                 'error': 'some error occurred.try again'
             })
             logger(err)
-            console.log(err)
         }
     }
 
@@ -160,7 +157,7 @@ export const putMessage = async (req, res) => {
  * @method put
  */
 export const MarkMessageAsRead = async (req, res) => {
-    console.log(req.userId)
+    console.log(req.params.id)
     const id = req.params.id
     if (!validator.isMongoId(id)) {
         res.status(400).send({

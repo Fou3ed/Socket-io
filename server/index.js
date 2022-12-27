@@ -172,16 +172,15 @@ io.use((socket, next) => {
 });
 
 io.on("connection", (socket) => {
-  console.log("server : connected")
+  console.log(socket.username,"is connected to the socket :",socket.id," in session :",socket.sessionID)
   // persist session
   sessionStore.saveSession(socket.sessionID, {
     userID: socket.userID,
     username: socket.username,
     connected: true,
-  });
-  socket.on('disconnect',()=>{
-    console.log("disconnected")
-  })
+  }
+  );
+  socket.emit("onConnect")
 
   // emit session details
   socket.emit("session", {
@@ -213,7 +212,7 @@ io.on("connection", (socket) => {
 
   socket.on('read-msg', function (data) {
     io.to(data.userID).emit('delete-msg',data);
-    console.log(data)
+    console.log("read msg data",data)
 });
 
   sessionStore.findAllSessions().forEach((session) => {
@@ -265,8 +264,6 @@ io.on("connection", (socket) => {
     }
     foued.addMsg(data)
   });
-
-
 
   socket.on('read-msg',  (data)=> {
     io.to(data.userId).emit('read-msg', data);

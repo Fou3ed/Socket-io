@@ -1,8 +1,8 @@
 
-let timeout = 1000;
-let retrying = false;
+// let timeout = 1000;
+// let retrying = false;
 
-
+import socket from './socket.js'
 /**
  * Connections
     onConnect : User connect to websocket
@@ -12,34 +12,63 @@ let retrying = false;
     onConnectTimeout : User connection timeout reached
     onReconnectError : User reconnection error
  */
-export function makeConnection () {
-    console.log("connected to the server")
-}
-export function disconnectEventHandler() {
-    console.log('connected');
-    retrying = false;
-}
-export function reconnectEventHandler() {
-    console.log('User reconnect to websocket');
-}
-export function connectionErrorEventHandler() {
-     console.log('User connection error');
-}
-export function timeoutEventHandler() {
-    console.log('User connection timeout reached');
-}
-export function reconnectErrorEventHandler() {
-    console.log('User reconnection error');
-}
-
-
-
-export function closeEventHandler () {
-    // console.log('close');
-    if (!retrying) {
-        retrying = true;
-        console.log('Reconnecting...');
+class events{
+    makeConnection(){
+        
     }
-    setTimeout(makeConnection, timeout);
 }
 
+class clientEvents extends events{
+    constructor(){
+        super()
+    }
+    
+   async makeConnection() {
+        socket.on('onConnect',()=>{
+            console.log("connected to the server ")
+        })
+    }
+
+    async readMsg(userId){  
+        let data ={
+            userId:userId,
+            messageId:"63a9aa745617e4e3f48e1072"
+          }
+          socket.on('read-msg',(data)=>{
+            console.log("hedhy l on",data)
+          })
+          socket.emit('read-msg',(data))
+    }
+
+    
+}
+
+
+// export function disconnectEventHandler() {
+//     console.log('disconnected');
+// }
+// export function reconnectEventHandler() {
+//     console.log('User reconnect to websocket');
+// }
+// export function connectionErrorEventHandler() {
+//      console.log('User connection error');
+// }
+// export function timeoutEventHandler() {
+//     console.log('User connection timeout reached');
+// }
+// export function reconnectErrorEventHandler() {
+//     console.log('User reconnection error');
+// }
+
+
+
+// export function closeEventHandler () {
+//     console.log('close');
+//     if (!retrying) {
+//         retrying = true;
+//         console.log('Reconnecting...');
+//     }
+//     setTimeout(makeConnection, timeout);
+// }
+
+export default clientEvents

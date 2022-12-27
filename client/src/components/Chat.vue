@@ -22,7 +22,8 @@
 import socket from "../socket";
 import User from "./User";
 import MessagePanel from "./MessagePanel";
-
+import clientEvents from "../eventFunctions";
+const foued = new clientEvents() 
 export default {
   name: "Chat",
   components: { User, MessagePanel },
@@ -34,25 +35,11 @@ export default {
   },
   methods: {
     onMessage(content) {
-      console.log(content)
       if (this.selectedUser) {
         socket.emit("private message", {
           content,
           to: this.selectedUser.userID,
          });
-         
-         let data ={
-        userId:this.selectedUser.userID,
-        messageId:"63a9aa745617e4e3f48e1072"
-      }
-
-
-      socket.on('read-msg',(data)=>{
-        console.log("hedhy l on",data)
-      })
-      socket.emit('read-msg',(data))
-
-
         this.selectedUser.messages.push({
           content,
           fromSelf: true,
@@ -72,6 +59,7 @@ export default {
         }
       });
     });
+
 
     socket.on("disconnect", () => {
       this.users.forEach((user) => {
@@ -96,7 +84,6 @@ export default {
           if (existingUser.userID === user.userID) {
             existingUser.connected = user.connected;
             existingUser.messages = user.messages;
-
             return;
           }
         }
@@ -147,7 +134,7 @@ export default {
           if (user !== this.selectedUser) {
             user.hasNewMessages = true;
           }
-
+            foued.readMsg(this.selectedUser)
           break;
         }
       }
