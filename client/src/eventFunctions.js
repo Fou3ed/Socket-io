@@ -1,4 +1,3 @@
-
 // let timeout = 1000;
 // let retrying = false;
 
@@ -12,35 +11,70 @@ import socket from './socket.js'
     onConnectTimeout : User connection timeout reached
     onReconnectError : User reconnection error
  */
-class events{
-    makeConnection(){
-        
-    }
-}
 
-class clientEvents extends events{
-    constructor(){
-        super()
-    }
-    
-   async makeConnection() {
-        socket.on('onConnect',()=>{
-            console.log("connected to the server ")
-        })
-    }
+class clientEvents {
+  constructor() {
 
-    async readMsg(userId){  
-        let data ={
-            userId:userId,
-            messageId:"63a9aa745617e4e3f48e1072"
+  }
+
+  async makeConnection() {
+    socket.on('onConnect', () => {
+      console.log("connected to the server ")
+    })
+  }
+
+  /**
+   * onConnectError : User connection error
+   * @param {*this.usernameAlreadySelected} params 
+   */
+  async connectError(params) {
+    socket.on("connect_error", (err) => {
+      if (err.message === "invalid username") {
+        params.usernameAlreadySelected = false;
+      }
+    });
+  }
+
+
+  async getReadMsg(params) {
+    socket.on("private message", ({
+      content,
+      from,
+      to
+    }) => {
+      for (let i = 0; i < params.users.length; i++) {
+        const user = params.users[i];
+        const fromSelf = socket.userID === from;
+        if (user.userID === (fromSelf ? to : from)) {
+          user.messages.push({
+            content,
+            fromSelf,
+          });
+          if (user !== params.selectedUser) {
+            user.hasNewMessages = true;
           }
-          socket.on('read-msg',(data)=>{
-            console.log("hedhy l on",data)
-          })
-          socket.emit('read-msg',(data))
-    }
+          break;
+        }
+      }
 
-    
+
+
+
+    });
+  }
+
+  async readMsg(userId) {
+    console.log("userId :", userId)
+    let data = {
+      userId: userId,
+      messageId: "63a9aa745617e4e3f48e1072"
+    }
+    socket.emit('read-msg', (data))
+
+
+  }
+
+
 }
 
 

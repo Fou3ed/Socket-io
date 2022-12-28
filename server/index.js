@@ -27,7 +27,7 @@ import process from 'node:process';
 import crypto from "crypto"
 import InMemoryMessageStore from "../server/src/constants/messageStore.js";
 import InMemorySessionStore from "../server/src/constants/sessionStore.js";
-import actions from '../server/dist/simpleFetch.js'
+import actions from './dist/actions.js'
 /**
  * => Calls the express function "express()" and puts new Express application inside the app variable (to start a new Express application).
  *  It's something like you are creating an object of a class. Where "express()" is just like class and app is it's newly created object.
@@ -140,6 +140,9 @@ const sessionStore = new InMemorySessionStore();
  * implement: store all the messages on the server-side.
  */
 const messageStore = new InMemoryMessageStore();
+/**
+ * simpleFetch actions 
+ */
 const foued = new actions()
 /***
  * io.use() allows you to specify a function that is called for every new, incoming socket.io connection. It can be used for a wide variety of things such as:
@@ -160,7 +163,6 @@ io.use((socket, next) => {
       return next();
     }
   }
-
   const username = socket.handshake.auth.username;
   if (!username) {
     return next(new Error("invalid username"));
@@ -180,7 +182,9 @@ io.on("connection", (socket) => {
     connected: true,
   }
   );
+  
   socket.emit("onConnect")
+
 
   // emit session details
   socket.emit("session", {
@@ -208,13 +212,7 @@ io.on("connection", (socket) => {
     }
 
   });
-
-
-  socket.on('read-msg', function (data) {
-    io.to(data.userID).emit('delete-msg',data);
-    console.log("read msg data",data)
-});
-
+  
   sessionStore.findAllSessions().forEach((session) => {
     users.push({
       userID: session.userID,
@@ -224,6 +222,7 @@ io.on("connection", (socket) => {
     });
   });
   socket.emit("users", users);
+  
 
   // notify existing users
   socket.broadcast.emit("user connected", {
@@ -244,6 +243,8 @@ io.on("connection", (socket) => {
       from: socket.userID,
       to,
     };
+   
+    /* Sending a private message to a specific user. */
     socket.to(to).to(socket.userID).emit("private message", message);
     messageStore.saveMessage(message);
     let data ={
@@ -266,11 +267,13 @@ io.on("connection", (socket) => {
   });
 
   socket.on('read-msg',  (data)=> {
+    console.log("read msg data ",data)
+    console.log("message been read")
     io.to(data.userId).emit('read-msg', data);
-    foued.readMsg(data.messageId)
-
-    
+    foued.readMsg(data)
+    console.log(data)
 });
+
 
   // notify users upon disconnection
   socket.on("disconnect", async () => {

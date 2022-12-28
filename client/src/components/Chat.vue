@@ -74,7 +74,6 @@ export default {
     };
 
     socket.on("users", (users) => {
-
       users.forEach((user) => {
         user.messages.forEach((message) => {
           message.fromSelf = message.from === socket.userID;
@@ -121,28 +120,9 @@ export default {
         }
       }
     });
+        foued.getReadMsg({selectedUser:this.selectedUser,users:this.users})
+        foued.readMsg(this.selectedUser)
 
-    socket.on("private message", ({ content, from, to }) => {
-      for (let i = 0; i < this.users.length; i++) {
-        const user = this.users[i];
-        const fromSelf = socket.userID === from;
-        if (user.userID === (fromSelf ? to : from)) {
-          user.messages.push({
-            content,
-            fromSelf,
-          });
-          if (user !== this.selectedUser) {
-            user.hasNewMessages = true;
-          }
-            foued.readMsg(this.selectedUser)
-          break;
-        }
-      }
-
-
-
-
-    });
   },
   destroyed() {
     socket.off("connect");

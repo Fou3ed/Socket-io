@@ -53,6 +53,7 @@ export default {
       socket.on("delete-msg",(data)=>{
           console.log("lenna",data)
       })
+      
     socket.on("connect_error", (err) => {
       if (err.message === "invalid username") {
         this.usernameAlreadySelected = false;

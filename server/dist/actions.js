@@ -352,4 +352,3 @@ class actions extends acts{
 
 export default actions
 
-//create an instance 

@@ -1,12 +1,9 @@
-class events{
-
-}
-class serverEvents extends events{
+class serverEvents {
     constructor(){
-        super()
     }
     async readMsg(){
 
     }
 }
+
 export default serverEvents
