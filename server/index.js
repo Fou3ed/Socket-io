@@ -2,7 +2,6 @@
 import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
-import cors from "cors";
 import {
   Server
 } from "socket.io";
@@ -32,6 +31,7 @@ import actions from './dist/actions.js'
  * => Calls the express function "express()" and puts new Express application inside the app variable (to start a new Express application).
  *  It's something like you are creating an object of a class. Where "express()" is just like class and app is it's newly created object.
  */
+
 const app = express();
 
 /**
@@ -47,7 +47,6 @@ const httpServer = createServer(app);
 
 /**
  *  SOCKET Initialization with EXPRESS and Settling CORS options 
- *    
  */
 const io = new Server(httpServer, {
   cors: {
@@ -56,7 +55,10 @@ const io = new Server(httpServer, {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 
   }
+ 
 });
+
+
 
 /**
  * The app.use() function adds a new middleware to the app.
@@ -78,15 +80,7 @@ app.use(express.json());
 app.use(express.urlencoded({
   extended: true
 }));
-/**
- * to check later if it's gonna stay or not (cz upstairs there is something like it )
- */
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
-  res.header("Access-Control-Allow-Headers", "*")
-  res.header("Access-Control-Allow-Methods", " GET,POST,PUT,DELETE,OPTIONS ")
-  next();
-});
+
 /**
  * The ‘uncaughtException’ is an event of class Process within the process module which is emitted when an uncaught JavaScript exception bubbles all the way back to the event loop.
  */
@@ -96,19 +90,6 @@ process.on("uncaughtException", (err) => {
   console.log("shutting down...");
   process.exit(1);
 });
-
-/**
- * to check later too
- */
-const corsOptions = {
-  origin: "*",
-  header: "*",
-  methods: "*",
-  credentials: true,
-
-};
-app.use(cors(corsOptions));
-
 /**
  * Helmet helps you secure your Express apps by setting various HTTP headers. It's not a silver bullet, but it can help!
  * 
@@ -126,7 +107,7 @@ app.use("/message", routerMessage)
 app.use("/role", routerRole)
 app.use("/media", routerMedia)
 app.use(cookieParser());
-
+   
 /**
  * 
  * @returns a Crypted string 
@@ -144,6 +125,8 @@ const messageStore = new InMemoryMessageStore();
  * simpleFetch actions 
  */
 const foued = new actions()
+
+
 /***
  * io.use() allows you to specify a function that is called for every new, incoming socket.io connection. It can be used for a wide variety of things such as:
  * Logging,Authentication,Managing sessions,Rate limiting,Connection validation
@@ -153,6 +136,7 @@ io.use((socket, next) => {
    * a session ID, private, which will be used to authenticate the user upon reconnection a user ID, public, which will be used as an identifier to exchange messages
    *  
    */
+
   const sessionID = socket.handshake.auth.sessionID;
   if (sessionID) {
     const session = sessionStore.findSession(sessionID);
@@ -171,20 +155,24 @@ io.use((socket, next) => {
   socket.userID = randomId();
   socket.username = username;
   next();
-  
 });
 
 io.on("connection", (socket) => {
-  console.log(socket.username,"is connected to the socket :",socket.id," in session :",socket.sessionID)
+
+  console.log(socket.username, "is connected to the socket :", socket.id, " in session :", socket.sessionID)
   // persist session
   sessionStore.saveSession(socket.sessionID, {
     userID: socket.userID,
     username: socket.username,
     connected: true,
-  }
-  );
+  });
 
-  socket.emit("onConnect")
+
+  //emitting the OnConnect function with displaying the socket ID in client side 
+  socket.emit("onConnect", {
+    socketID: socket.id
+  })
+
 
   // emit session details
   socket.emit("session", {
@@ -209,9 +197,8 @@ io.on("connection", (socket) => {
     } else {
       messagesPerUser.set(otherUser, [message]);
     }
-
   });
-  
+
   sessionStore.findAllSessions().forEach((session) => {
     users.push({
       userID: session.userID,
@@ -221,8 +208,6 @@ io.on("connection", (socket) => {
     });
   });
   socket.emit("users", users);
-  
-
   // notify existing users
   socket.broadcast.emit("user connected", {
     userID: socket.userID,
@@ -244,30 +229,27 @@ io.on("connection", (socket) => {
     };
     socket.to(to).to(socket.userID).emit("private message", message);
     messageStore.saveMessage(message);
-    let data ={
-      "type":"MESG",
-     "conversation_id":"63907b74266e3b8358516cd1",
-     "user":"6390b306dfb49a27e7e3c0bb",
-     "mentioned_users":"6390b4d54a1ba0044836d613",
-     "readBy":"6390b4d54a1ba0044836d613",
-    "is_removed":false,
-    "message":message.content,
-     "data":"additional message information ",
-     "attachments":{"key":"value"},
-     "parent_message_id":"6390bbb76b96e925c5eb1858",
-     "parent_message_info":"6390bbb76b96e925c5eb1858",
-     "location":"",
-     "origin":"web",
-      "read":null
+    let data = {
+      "type": "MESG",
+      "conversation_id": "63907b74266e3b8358516cd1",
+      "user": "6390b306dfb49a27e7e3c0bb",
+      "mentioned_users": "6390b4d54a1ba0044836d613",
+      "readBy": "6390b4d54a1ba0044836d613",
+      "is_removed": false,
+      "message": message.content,
+      "data": "additional message information ",
+      "attachments": {
+        "key": "value"
+      },
+      "parent_message_id": "6390bbb76b96e925c5eb1858",
+      "parent_message_info": "6390bbb76b96e925c5eb1858",
+      "location": "",
+      "origin": "web",
+      "read": null
     }
     foued.addMsg(data)
   });
 
-
-  socket.on('read-msg',(data)=> {
-    io.to(data.userId).emit('read-msg', data);
-    foued.readMsg(data)
-});
 
 
   // notify users upon disconnection
@@ -285,7 +267,6 @@ io.on("connection", (socket) => {
       });
     }
   });
-
 });
 
 /**
@@ -295,8 +276,6 @@ instrument(io, {
   auth: false,
   mode: "development",
 });
-
-
 dbServer();
 httpServer.listen(process.env.PORT)
 console.log(process.env.PORT)

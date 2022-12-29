@@ -23,6 +23,7 @@ const setupChatSocket = function (socket, clients, pubClient, io) {
         socket.join(data.channelId);
 
     });
+    
     //Channel events
     socket.on('deleted-msg', function (data) {
         io.to(data.channelId).emit('delete-msg',data);

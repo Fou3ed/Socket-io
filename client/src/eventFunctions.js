@@ -13,28 +13,101 @@ import socket from './socket.js'
  */
 
 class clientEvents {
-  constructor() {
+  constructor() {}
 
+  /**
+   ********************************* Server Events 
+   */
+
+  /**
+   * onOpen : Websocket connection opened
+   */
+  async onOpen() {
+    socket.on('onOpen', (event) => {
+      socket.send('onOpen socket server', event)
+    })
   }
-
-  async makeConnection() {
-    socket.on('onConnect', () => {
-      console.log("connected to the server ")
+  /**
+   * onClose : Websocket connection closed
+   */
+  async onClose() {
+    socket.on('onClose', () => {
+      socket.send('socket been closed')
     })
   }
 
   /**
-   * onConnectError : User connection error
-   * @param {*this.usernameAlreadySelected} params 
+   * onError : websocket connection error
    */
-  async connectError(params) {
-    console.log(params.usernameAlreadySelected)
-    socket.on("connect_error", (err) => {
-      if (err.message === "invalid username") {
-        params.usernameAlreadySelected = false;
-      }
-    });
+  async onError() {
+    socket.on('onError', () => {
+      socket.send('websocket connection error')
+    })
   }
+
+  /**
+   * ******************* Connections Events**********************************
+   */
+
+  /**
+   * onConnect : User connect to websocket
+   */
+  async makeConnection() {
+    socket.on('onConnect', () => {
+      socket.send(" user connected to websocket")
+    })
+  }
+  /**
+   * onReconnect : user reconnect to websocket
+   */
+  async onReconnect() {
+    socket.on('onReconnect', () => {
+      socket.send('user reconnect to websocket')
+    })
+  }
+
+  /**
+   * onConnectTimeOut: user connection timeout reached
+   */
+  async onConnectTimeOut(){
+    socket.on('onConnectTimeOut',()=>{
+      socket.send('user connection time out')
+    })
+  }
+
+  /**
+   * onReconnectError: user reconnection error
+   */
+  async onReconnectError(){
+    socket.on('onReconnectError',()=>{
+      socket.send('user reconnection  Error')
+    })
+  }
+
+
+  /**
+   * onConnectError : user connection error
+   *  @param {*this.usernameAlreadySelected} params 
+   */
+  async onConnectError(params) {
+    socket.on('onConnectError', () => {
+      socket.send('user connection error')
+      console.log(params.usernameAlreadySelected)
+      socket.on("connect_error", (err) => {
+        if (err.message === "invalid username") {
+          params.usernameAlreadySelected = false;
+        }
+      })
+    })
+  }
+
+
+
+
+
+
+
+
 
 
   async getReadMsg(params) {
@@ -58,8 +131,8 @@ class clientEvents {
         }
       }
     });
-  }
 
+  }
   
   async readMsg() {
     let data = {
@@ -68,36 +141,6 @@ class clientEvents {
     }
     socket.emit('read-msg', (data))
   }
-
-
 }
-
-
-// export function disconnectEventHandler() {
-//     console.log('disconnected');
-// }
-// export function reconnectEventHandler() {
-//     console.log('User reconnect to websocket');
-// }
-// export function connectionErrorEventHandler() {
-//      console.log('User connection error');
-// }
-// export function timeoutEventHandler() {
-//     console.log('User connection timeout reached');
-// }
-// export function reconnectErrorEventHandler() {
-//     console.log('User reconnection error');
-// }
-
-
-
-// export function closeEventHandler () {
-//     console.log('close');
-//     if (!retrying) {
-//         retrying = true;
-//         console.log('Reconnecting...');
-//     }
-//     setTimeout(makeConnection, timeout);
-// }
 
 export default clientEvents

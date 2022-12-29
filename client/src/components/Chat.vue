@@ -120,6 +120,7 @@ export default {
         }
       }
     });
+    
         foued.getReadMsg({selectedUser:this.selectedUser,users:this.users})
         foued.readMsg(this.selectedUser)
               
