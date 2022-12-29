@@ -11,8 +11,8 @@
 import SelectUsername from "./components/SelectUsername.vue";
 import Chat from "./components/Chat";
 import socket from "./socket";
-import clientEvents from './eventFunctions.js'
-const foued = new clientEvents()
+//import clientEvents from './eventFunctions.js'
+//const foued = new clientEvents()
 export default {
   name: "App",
   components: {
@@ -36,7 +36,8 @@ export default {
     if (sessionID) {
       this.usernameAlreadySelected = true;
       socket.auth = { sessionID };
-      socket.connect();
+      socket.connect()
+
     }
     socket.on("session", ({ sessionID, userID }) => {
       // attach the session ID to the next reconnection attempts
@@ -48,18 +49,15 @@ export default {
       localStorage.setItem("userID", userID);
     });
    // socket.emit("deleted-msg",({userID: localStorage.getItem("userID")}))
-    foued.makeConnection()
 
-      socket.on("delete-msg",(data)=>{
-          console.log("lenna",data)
-      })
-      
+   
     socket.on("connect_error", (err) => {
       if (err.message === "invalid username") {
         this.usernameAlreadySelected = false;
       }
     });
   }, 
+
   destroyed() {
     socket.off("connect_error");
   },

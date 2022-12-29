@@ -171,6 +171,7 @@ io.use((socket, next) => {
   socket.userID = randomId();
   socket.username = username;
   next();
+  
 });
 
 io.on("connection", (socket) => {
@@ -182,16 +183,14 @@ io.on("connection", (socket) => {
     connected: true,
   }
   );
-  
-  socket.emit("onConnect")
 
+  socket.emit("onConnect")
 
   // emit session details
   socket.emit("session", {
     sessionID: socket.sessionID,
     userID: socket.userID,
   });
-
 
   // join the "userID" room
   socket.join(socket.userID);
@@ -243,8 +242,6 @@ io.on("connection", (socket) => {
       from: socket.userID,
       to,
     };
-   
-    /* Sending a private message to a specific user. */
     socket.to(to).to(socket.userID).emit("private message", message);
     messageStore.saveMessage(message);
     let data ={
@@ -266,12 +263,10 @@ io.on("connection", (socket) => {
     foued.addMsg(data)
   });
 
-  socket.on('read-msg',  (data)=> {
-    console.log("read msg data ",data)
-    console.log("message been read")
+
+  socket.on('read-msg',(data)=> {
     io.to(data.userId).emit('read-msg', data);
     foued.readMsg(data)
-    console.log(data)
 });
 
 

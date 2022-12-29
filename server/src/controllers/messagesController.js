@@ -156,9 +156,8 @@ export const putMessage = async (req, res) => {
  * @route /message/read/:id
  * @method put
  */
-export const MarkMessageAsRead = async (req, res) => {
-    console.log(req.params.id)
-    const id = req.params.id
+export const MarkMessageAsRead = async (data, res) => {
+    const id = data.params.id
     if (!validator.isMongoId(id)) {
         res.status(400).send({
             'error': 'there is no such member (wrong id)'
@@ -172,7 +171,6 @@ export const MarkMessageAsRead = async (req, res) => {
                     }
                 })
             if (result) {
-                console.log("tbadlt")
                 res.status(202).json({
                     message: "success",
                     data: result

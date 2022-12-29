@@ -28,6 +28,7 @@ class clientEvents {
    * @param {*this.usernameAlreadySelected} params 
    */
   async connectError(params) {
+    console.log(params.usernameAlreadySelected)
     socket.on("connect_error", (err) => {
       if (err.message === "invalid username") {
         params.usernameAlreadySelected = false;
@@ -56,22 +57,16 @@ class clientEvents {
           break;
         }
       }
-
-
-
-
     });
   }
 
-  async readMsg(userId) {
-    console.log("userId :", userId)
+  
+  async readMsg() {
     let data = {
-      userId: userId,
-      messageId: "63a9aa745617e4e3f48e1072"
+      userId: "6390b306dfb49a27e7e3c0bb",
+      messageId: "63ad44e1c40bbf656fc1532c"
     }
     socket.emit('read-msg', (data))
-
-
   }
 
 

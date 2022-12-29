@@ -185,8 +185,8 @@ class actions extends acts{
   /**
    * markMessageAsRead : mark a message as read.
    */
-  async readMsg(id, data) {
-    const response = await fetch(`http://127.0.0.1:3000/message/read/${id}`, {
+  async readMsg(data) {
+    const response = await fetch(`http://127.0.0.1:3000/message/read/${data.messageId}`, {
       method: 'PUT',
       headers: {
         'Content-type': 'application/json'
