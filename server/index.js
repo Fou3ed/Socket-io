@@ -137,6 +137,7 @@ io.use((socket, next) => {
    *  
    */
 
+
   const sessionID = socket.handshake.auth.sessionID;
   if (sessionID) {
     const session = sessionStore.findSession(sessionID);
@@ -158,8 +159,7 @@ io.use((socket, next) => {
 });
 
 io.on("connection", (socket) => {
-
-  console.log(socket.username, "is connected to the socket :", socket.id, " in session :", socket.sessionID)
+  console.log(socket.username, "is connected to the socket : ", socket.id, " in session :", socket.sessionID)
   // persist session
   sessionStore.saveSession(socket.sessionID, {
     userID: socket.userID,
@@ -167,12 +167,31 @@ io.on("connection", (socket) => {
     connected: true,
   });
 
+  // join the "userID" room
+  socket.join(socket.userID);
 
   //emitting the OnConnect function with displaying the socket ID in client side 
   socket.emit("onConnect", {
     socketID: socket.id
   })
 
+    /**
+ * get user
+ */
+    socket.on('get-user', (data) =>{
+      console.log(data)
+      io.to(data.userID).emit('get-user', data);
+      const test = foued.getUserName(data)
+      test.then(res =>{
+        console.log(res)
+      })
+      
+    });
+
+socket.on('read-msg', (data) =>{
+  io.to(data.userID).emit('read-msg', data);
+  foued.readMsg(data)
+});
 
   // emit session details
   socket.emit("session", {
@@ -180,8 +199,7 @@ io.on("connection", (socket) => {
     userID: socket.userID,
   });
 
-  // join the "userID" room
-  socket.join(socket.userID);
+  
 
   // fetch existing users
   const users = [];

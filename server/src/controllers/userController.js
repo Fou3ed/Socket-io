@@ -31,6 +31,29 @@ export const getUsers = async (req, res) => {
         })
     }
 }
+
+ /**
+  *getUserName : get user by y name 
+  @route /userName/:name
+  *  */   
+export const getUserName = async (req,res)=>{
+    const nickname=req.query.nickname
+    try{
+        const result=await user.findOne({nickname:nickname})
+        res.status(200).json({
+            message:"success",
+            data:result
+        })
+    }catch(err){
+        console.log(err)
+        logger(err)
+        res.status(400).end({
+            message:"fail retrieving data"
+        })
+    }
+}
+
+
 /**
  * getUser : get user data
  * @route /user/:id
@@ -65,6 +88,7 @@ export const getUser = async (req, res) => {
  * @body  nickname,full_name,profile_url,access_token,role,is_active,is_online,locale,last_seen_at,metadata
  */
 export const postUser = async (req, res) => {
+
     const data = {
         nickname: req.body.nickname,
         full_name: req.body.full_name,
@@ -97,7 +121,9 @@ export const postUser = async (req, res) => {
             'error': error.details[0].message
         })
     } else {
+
         try {
+
             const result = await user.create(req.body);
             if (result) {
                 res.status(201).json({
@@ -105,16 +131,18 @@ export const postUser = async (req, res) => {
                     date: result
                 })
             } else {
+
                 res.status(400).json({
                     "error": 'failed to create new user'
                 })
             }
         } catch (err) {
+            console.log("err",err)
+
             res.status(400).json({
                 'error': 'some error occurred.try again'
             })
             logger(err)
-            console.log(err)
         }
     }
 }

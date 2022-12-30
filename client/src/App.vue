@@ -28,10 +28,12 @@ export default {
     onUsernameSelection(username) {
       this.usernameAlreadySelected = true;
       socket.auth = { username };
+      foued.getUser(username)
       socket.connect();
     },
   }, 
   created() {
+    
     foued.onOpen()
     const sessionID = localStorage.getItem("sessionID");
     if (sessionID) {
@@ -50,6 +52,7 @@ export default {
       localStorage.setItem("userID", userID);
 
     });
+
    // socket.emit("deleted-msg",({userID: localStorage.getItem("userID")}))
     socket.on("connect_error", (err) => {
       if (err.message === "invalid username") {

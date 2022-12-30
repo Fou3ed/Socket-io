@@ -1,5 +1,7 @@
 import User from '../models/userModel.js'
+
 const setupChatSocket = function (socket, clients, pubClient, io) {
+
     socket.on('add-listener', async function (data) {
         let id = parseInt(data.id);
         if (!clients.find((client) => client.socketId === socket.id)) {
@@ -18,6 +20,7 @@ const setupChatSocket = function (socket, clients, pubClient, io) {
             update_users();
         }
     });
+    
     //Add a user to a channel
     socket.on('add-user', function (data) {
         socket.join(data.channelId);
@@ -27,7 +30,6 @@ const setupChatSocket = function (socket, clients, pubClient, io) {
     //Channel events
     socket.on('deleted-msg', function (data) {
         io.to(data.channelId).emit('delete-msg',data);
-        console.log("deleted-msg")
     });
     socket.on('hidden-msg', function (data) {
         io.to(data.channelId).emit('hide-msg', data);

@@ -69,8 +69,8 @@ class clientEvents {
   /**
    * onConnectTimeOut: user connection timeout reached
    */
-  async onConnectTimeOut(){
-    socket.on('onConnectTimeOut',()=>{
+  async onConnectTimeOut() {
+    socket.on('onConnectTimeOut', () => {
       socket.send('user connection time out')
     })
   }
@@ -78,8 +78,8 @@ class clientEvents {
   /**
    * onReconnectError: user reconnection error
    */
-  async onReconnectError(){
-    socket.on('onReconnectError',()=>{
+  async onReconnectError() {
+    socket.on('onReconnectError', () => {
       socket.send('user reconnection  Error')
     })
   }
@@ -133,14 +133,34 @@ class clientEvents {
     });
 
   }
-  
+
   async readMsg() {
     let data = {
       userId: "6390b306dfb49a27e7e3c0bb",
-      messageId: "63ad44e1c40bbf656fc1532c"
+      messageId: "63aea9384238af9d8eb1d91f"
     }
     socket.emit('read-msg', (data))
   }
+  async onReadMsg() {
+    socket.on("read-msg", (data) => {
+      console.log(data)
+    })
+  }
+
+
+
+  
+  async getUser(data) {
+    let nickname= data
+    socket.emit('get-user', (nickname))
+  }
+  
+  async onGetUser(){
+    socket.on('get-user',(nickname)=>{
+      console.log("nickname:",nickname)
+    })
+  }
 }
+
 
 export default clientEvents

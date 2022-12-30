@@ -1,14 +1,8 @@
 'use-strict'
 /* eslint-disable no-unused-vars */
 
-class acts{
-  addMsg(data){
-
-  }
-}
-class actions extends acts{
+class actions{
   constructor() {
-    super()
   }
   /**
    * get all conversations 
@@ -244,6 +238,16 @@ class actions extends acts{
     const response = await fetch(`http://127.0.0.1:3000/users/${id}`)
     const resData = await response.json();
     return resData;
+  }
+  /**
+   * getUserName: get user by name 
+   */
+  async getUserName(name){
+    console.log("nickname:",name)
+    const response = await fetch(`http://127.0.0.1:3000/users/userName/query?nickname=${name}`)
+    const resData = await response.json()
+    return resData
+
   }
 
   /**
