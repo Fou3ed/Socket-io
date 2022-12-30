@@ -100,16 +100,6 @@ class clientEvents {
       })
     })
   }
-
-
-
-
-
-
-
-
-
-
   async getReadMsg(params) {
     socket.on("private message", ({
       content,
@@ -131,7 +121,6 @@ class clientEvents {
         }
       }
     });
-
   }
 
   async readMsg() {
@@ -141,14 +130,12 @@ class clientEvents {
     }
     socket.emit('read-msg', (data))
   }
+
   async onReadMsg() {
     socket.on("read-msg", (data) => {
       console.log(data)
     })
   }
-
-
-
   
   async getUser(data) {
     let nickname= data

@@ -53,9 +53,8 @@ const io = new Server(httpServer, {
     origin: ["http://localhost:8080", "https://admin.socket.io"],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-
   }
- 
+
 });
 
 
@@ -107,7 +106,7 @@ app.use("/message", routerMessage)
 app.use("/role", routerRole)
 app.use("/media", routerMedia)
 app.use(cookieParser());
-   
+
 /**
  * 
  * @returns a Crypted string 
@@ -136,8 +135,6 @@ io.use((socket, next) => {
    * a session ID, private, which will be used to authenticate the user upon reconnection a user ID, public, which will be used as an identifier to exchange messages
    *  
    */
-
-
   const sessionID = socket.handshake.auth.sessionID;
   if (sessionID) {
     const session = sessionStore.findSession(sessionID);
@@ -156,6 +153,18 @@ io.use((socket, next) => {
   socket.userID = randomId();
   socket.username = username;
   next();
+  /**
+   * get user
+   */
+  socket.on('get-user', (data) => {
+    console.log(data)
+    const test = foued.getUserName(data)
+    test.then(res => {
+      console.log(res)
+      io.to(data.userID).emit('get-user', res.data);
+    })
+
+  });
 });
 
 io.on("connection", (socket) => {
@@ -175,31 +184,16 @@ io.on("connection", (socket) => {
     socketID: socket.id
   })
 
-    /**
- * get user
- */
-    socket.on('get-user', (data) =>{
-      console.log(data)
-      io.to(data.userID).emit('get-user', data);
-      const test = foued.getUserName(data)
-      test.then(res =>{
-        console.log(res)
-      })
-      
-    });
-
-socket.on('read-msg', (data) =>{
-  io.to(data.userID).emit('read-msg', data);
-  foued.readMsg(data)
-});
+  socket.on('read-msg', (data) => {
+    io.to(data.userID).emit('read-msg', data);
+    foued.readMsg(data)
+  });
 
   // emit session details
   socket.emit("session", {
     sessionID: socket.sessionID,
     userID: socket.userID,
   });
-
-  
 
   // fetch existing users
   const users = [];
@@ -233,8 +227,6 @@ socket.on('read-msg', (data) =>{
     connected: true,
     messages: [],
   });
-
-
   // forward the private message to the right recipient (and to other tabs of the sender)
   socket.on("private message", ({
     content,

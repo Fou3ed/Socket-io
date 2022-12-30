@@ -24,7 +24,6 @@ const setupChatSocket = function (socket, clients, pubClient, io) {
     //Add a user to a channel
     socket.on('add-user', function (data) {
         socket.join(data.channelId);
-
     });
     
     //Channel events
@@ -46,6 +45,7 @@ const setupChatSocket = function (socket, clients, pubClient, io) {
     socket.on('typing-message', function (data) {
         io.to(data.channelId).emit('typing-message', data);
     });
+    
     socket.on('stop-typing-message', function (data) {
         io.to(data.channelId).emit('stop-typing-message', data);
     });

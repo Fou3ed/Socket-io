@@ -28,12 +28,12 @@ export default {
     onUsernameSelection(username) {
       this.usernameAlreadySelected = true;
       socket.auth = { username };
+      
       foued.getUser(username)
       socket.connect();
     },
   }, 
   created() {
-    
     foued.onOpen()
     const sessionID = localStorage.getItem("sessionID");
     if (sessionID) {

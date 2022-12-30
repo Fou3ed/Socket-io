@@ -59,8 +59,6 @@ export default {
         }
       });
     });
-
-
     socket.on("disconnect", () => {
       this.users.forEach((user) => {
         if (user.self) {
@@ -124,6 +122,7 @@ export default {
         foued.getReadMsg({selectedUser:this.selectedUser,users:this.users})
         foued.onReadMsg()
         foued.readMsg(this.selectedUser)
+        
 
   },
   destroyed() {
