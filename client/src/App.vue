@@ -28,9 +28,9 @@ export default {
     onUsernameSelection(username) {
       this.usernameAlreadySelected = true;
       socket.auth = { username };
-      
-      foued.getUser(username)
+      foued.getUser({username})
       socket.connect();
+      
     },
   }, 
   created() {
@@ -41,6 +41,7 @@ export default {
       socket.auth = { sessionID };
       socket.connect()
     }
+
     foued.makeConnection()
     socket.on("session", ({ sessionID, userID }) => {
       // attach the session ID to the next reconnection attempts

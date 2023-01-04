@@ -27,6 +27,12 @@ import crypto from "crypto"
 import InMemoryMessageStore from "../server/src/constants/messageStore.js";
 import InMemorySessionStore from "../server/src/constants/sessionStore.js";
 import actions from './dist/actions.js'
+import redis from 'redis'
+import { createAdapter } from "@socket.io/redis-adapter";
+
+// import redisAdapter from 'socket.io-redis'
+import chatSocket from "./src/controllers/socketController.js";
+
 /**
  * => Calls the express function "express()" and puts new Express application inside the app variable (to start a new Express application).
  *  It's something like you are creating an object of a class. Where "express()" is just like class and app is it's newly created object.
@@ -54,10 +60,24 @@ const io = new Server(httpServer, {
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   }
-
 });
 
 
+
+if (process.env.STATUS === "development") {
+  const pubClient = redis.createClient({
+    port: process.env.REDIS_PORT,
+    host: process.env.REDIS_HOST,
+  }    
+  );
+  const subClient = pubClient.duplicate();
+
+  Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
+    io.adapter(createAdapter(pubClient, subClient));
+  
+})
+  chatSocket(io,pubClient)
+}
 
 /**
  * The app.use() function adds a new middleware to the app.
@@ -149,22 +169,25 @@ io.use((socket, next) => {
   if (!username) {
     return next(new Error("invalid username"));
   }
-  socket.sessionID = randomId();
-  socket.userID = randomId();
-  socket.username = username;
-  next();
-  /**
-   * get user
+
+  /** 
+   * get username and userId
    */
   socket.on('get-user', (data) => {
     console.log(data)
-    const test = foued.getUserName(data)
+    const test = foued.getUserName(data.username)
     test.then(res => {
-      console.log(res)
+      console.log(res.data._id)
       io.to(data.userID).emit('get-user', res.data);
+      
     })
-
   });
+  
+    socket.userID=randomId()
+    socket.sessionID = randomId();
+    socket.username = username;
+
+  next();
 });
 
 io.on("connection", (socket) => {
@@ -184,8 +207,9 @@ io.on("connection", (socket) => {
     socketID: socket.id
   })
 
+
   socket.on('read-msg', (data) => {
-    io.to(data.userID).emit('read-msg', data);
+    io.to(data.userID).emit('read-msg',data);
     foued.readMsg(data)
   });
 

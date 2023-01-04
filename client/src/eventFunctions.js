@@ -136,6 +136,8 @@ class clientEvents {
       console.log(data)
     })
   }
+
+
   
   async getUser(data) {
     let nickname= data
@@ -144,7 +146,7 @@ class clientEvents {
   
   async onGetUser(){
     socket.on('get-user',(nickname)=>{
-      console.log("nickname:",nickname)
+      console.log("nickname hedha :",nickname)
     })
   }
 }

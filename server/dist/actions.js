@@ -3,6 +3,7 @@
 
 class actions{
   constructor() {
+    
   }
   /**
    * get all conversations 
@@ -247,7 +248,6 @@ class actions{
     const response = await fetch(`http://127.0.0.1:3000/users/userName/query?nickname=${name}`)
     const resData = await response.json()
     return resData
-
   }
 
   /**
