@@ -23,10 +23,7 @@ import routerRole from '../server/src/routes/roleRoutes.js'
 import routerMedia from '../server/src/routes/mediaRoutes.js'
 import dbServer from "./DB.js";
 import process from 'node:process';
-import crypto from "crypto"
-import InMemoryMessageStore from "../server/src/constants/messageStore.js";
-import InMemorySessionStore from "../server/src/constants/sessionStore.js";
-import actions from './dist/actions.js'
+
 import redis from 'redis'
 import { createAdapter } from "@socket.io/redis-adapter";
 
@@ -62,8 +59,14 @@ const io = new Server(httpServer, {
   }
 });
 
-
-
+/**
+ * 
+ * This code creates two Redis clients: pubClient and subClient. The pubClient is used to publish messages to Redis channels, while the subClient is used to subscribe to messages from Redis channels.
+ *The createClient method of the redis library is used to create a new Redis client. It takes an object as an argument, which can contain various options for configuring the client. In this case, the port and host options are being set using environment variables process.env.REDIS_PORT and process.env.REDIS_HOST, respectively.
+ *The subClient is created by calling the duplicate method on the pubClient object. This creates a new client that is a duplicate of the pubClient, but with a separate connection to the Redis server. This allows both the pubClient and subClient to be used simultaneously without interfering with each other.
+ *The Promise.all method is used to wait for both the pubClient and subClient to connect to the Redis server before calling the io.adapter method. The createAdapter function is passed the pubClient and subClient as arguments, and returns an adapter that can be used by Socket.IO to communicate with the Redis store.
+ * 
+ */
 if (process.env.STATUS === "development") {
   const pubClient = redis.createClient({
     port: process.env.REDIS_PORT,
@@ -71,11 +74,10 @@ if (process.env.STATUS === "development") {
   }    
   );
   const subClient = pubClient.duplicate();
-
   Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
     io.adapter(createAdapter(pubClient, subClient));
-  
 })
+
   chatSocket(io,pubClient)
 }
 
@@ -127,185 +129,9 @@ app.use("/role", routerRole)
 app.use("/media", routerMedia)
 app.use(cookieParser());
 
-/**
- * 
- * @returns a Crypted string 
- */
-const randomId = () => crypto.randomBytes(8).toString("hex");
-/**
- * implement: store all the Sessions on the server-side.
- */
-const sessionStore = new InMemorySessionStore();
-/**
- * implement: store all the messages on the server-side.
- */
-const messageStore = new InMemoryMessageStore();
-/**
- * simpleFetch actions 
- */
-const foued = new actions()
 
 
-/***
- * io.use() allows you to specify a function that is called for every new, incoming socket.io connection. It can be used for a wide variety of things such as:
- * Logging,Authentication,Managing sessions,Rate limiting,Connection validation
- */
-io.use((socket, next) => {
-  /**
-   * a session ID, private, which will be used to authenticate the user upon reconnection a user ID, public, which will be used as an identifier to exchange messages
-   *  
-   */
-  const sessionID = socket.handshake.auth.sessionID;
-  if (sessionID) {
-    const session = sessionStore.findSession(sessionID);
-    if (session) {
-      socket.sessionID = sessionID;
-      socket.userID = session.userID;
-      socket.username = session.username;
-      return next();
-    }
-  }
-  const username = socket.handshake.auth.username;
-  if (!username) {
-    return next(new Error("invalid username"));
-  }
-
-  /** 
-   * get username and userId
-   */
-  socket.on('get-user', (data) => {
-    console.log(data)
-    const test = foued.getUserName(data.username)
-    test.then(res => {
-      console.log(res.data._id)
-      io.to(data.userID).emit('get-user', res.data);
-      
-    })
-  });
-  
-    socket.userID=randomId()
-    socket.sessionID = randomId();
-    socket.username = username;
-
-  next();
-});
-
-io.on("connection", (socket) => {
-  console.log(socket.username, "is connected to the socket : ", socket.id, " in session :", socket.sessionID)
-  // persist session
-  sessionStore.saveSession(socket.sessionID, {
-    userID: socket.userID,
-    username: socket.username,
-    connected: true,
-  });
-
-  // join the "userID" room
-  socket.join(socket.userID);
-
-  //emitting the OnConnect function with displaying the socket ID in client side 
-  socket.emit("onConnect", {
-    socketID: socket.id
-  })
-
-
-  socket.on('read-msg', (data) => {
-    io.to(data.userID).emit('read-msg',data);
-    foued.readMsg(data)
-  });
-
-  // emit session details
-  socket.emit("session", {
-    sessionID: socket.sessionID,
-    userID: socket.userID,
-  });
-
-  // fetch existing users
-  const users = [];
-  const messagesPerUser = new Map();
-  messageStore.findMessagesForUser(socket.userID).forEach((message) => {
-    const {
-      from,
-      to
-    } = message;
-    const otherUser = socket.userID === from ? to : from;
-    if (messagesPerUser.has(otherUser)) {
-      messagesPerUser.get(otherUser).push(message);
-    } else {
-      messagesPerUser.set(otherUser, [message]);
-    }
-  });
-
-  sessionStore.findAllSessions().forEach((session) => {
-    users.push({
-      userID: session.userID,
-      username: session.username,
-      connected: session.connected,
-      messages: messagesPerUser.get(session.userID) || [],
-    });
-  });
-  socket.emit("users", users);
-  // notify existing users
-  socket.broadcast.emit("user connected", {
-    userID: socket.userID,
-    username: socket.username,
-    connected: true,
-    messages: [],
-  });
-  // forward the private message to the right recipient (and to other tabs of the sender)
-  socket.on("private message", ({
-    content,
-    to
-  }) => {
-    const message = {
-      content,
-      from: socket.userID,
-      to,
-    };
-    socket.to(to).to(socket.userID).emit("private message", message);
-    messageStore.saveMessage(message);
-    let data = {
-      "type": "MESG",
-      "conversation_id": "63907b74266e3b8358516cd1",
-      "user": "6390b306dfb49a27e7e3c0bb",
-      "mentioned_users": "6390b4d54a1ba0044836d613",
-      "readBy": "6390b4d54a1ba0044836d613",
-      "is_removed": false,
-      "message": message.content,
-      "data": "additional message information ",
-      "attachments": {
-        "key": "value"
-      },
-      "parent_message_id": "6390bbb76b96e925c5eb1858",
-      "parent_message_info": "6390bbb76b96e925c5eb1858",
-      "location": "",
-      "origin": "web",
-      "read": null
-    }
-    foued.addMsg(data)
-  });
-
-
-
-  // notify users upon disconnection
-  socket.on("disconnect", async () => {
-    const matchingSockets = await io.in(socket.userID).allSockets();
-    const isDisconnected = matchingSockets.size === 0;
-    if (isDisconnected) {
-      // notify other users
-      socket.broadcast.emit("user disconnected", socket.userID);
-      // update the connection status of the session
-      sessionStore.saveSession(socket.sessionID, {
-        userID: socket.userID,
-        username: socket.username,
-        connected: false,
-      });
-    }
-  });
-});
-
-/**
- * monitoring
- *  */
+/* It's a monitoring tool for socket.io. */
 instrument(io, {
   auth: false,
   mode: "development",

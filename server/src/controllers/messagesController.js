@@ -171,7 +171,7 @@ export const MarkMessageAsRead = async (data, res) => {
                     }
                 })
             if (result) {
-                    console.log("message been read")
+             console.log("message been read")
                 res.status(202).json({
                     message: "success",
                     data: result

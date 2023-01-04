@@ -125,8 +125,8 @@ class clientEvents {
 
   async readMsg() {
     let data = {
-      userId: "6390b306dfb49a27e7e3c0bb",
-      messageId: "63aea9384238af9d8eb1d91f"
+      userId: localStorage.getItem("userID"),
+      messageId: localStorage.getItem('')
     }
     socket.emit('read-msg', (data))
   }
