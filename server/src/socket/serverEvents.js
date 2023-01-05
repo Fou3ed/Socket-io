@@ -19,8 +19,9 @@ const sessionStore = new InMemorySessionStore();
 const messageStore = new InMemoryMessageStore();
 
 const foued = new actions()
-
+ 
 export const setupChatSocket = function (socket, clients, pubClient, io) {
+
   /***
    * io.use() allows you to specify a function that is called for every new, incoming socket.io connection. It can be used for a wide variety of things such as:
    * Logging,Authentication,Managing sessions,Rate limiting,Connection validation
@@ -40,6 +41,19 @@ export const setupChatSocket = function (socket, clients, pubClient, io) {
         return next();
       }
     }
+
+    socket.on('add-listener', async function (data) {
+      let id = parseInt(data.id);
+      if (!clients.find((client) => client.socketId === socket.id)) {
+        console.log('update ',clients)
+        foued.getUser(id)
+        foued.addUser(id, socket.id)
+        pubClient.set('clients', JSON.stringify(clients));
+        socket.join(socket.id);
+        update_users();
+      }
+    });  
+
     const username = socket.handshake.auth.username;
     if (!username) {
       return next(new Error("invalid username"));
@@ -47,11 +61,11 @@ export const setupChatSocket = function (socket, clients, pubClient, io) {
     socket.userID = randomId()
     socket.sessionID = randomId();
     socket.username = username;
-
     next();
   });
 
   console.log(socket.username, "is connected to the socket : ", socket.id, " in session :", socket.sessionID)
+
   // persist session
   sessionStore.saveSession(socket.sessionID, {
     userID: socket.userID,
@@ -73,19 +87,6 @@ export const setupChatSocket = function (socket, clients, pubClient, io) {
       userID: socket.userID,
     });
   
-
-  socket.on('add-listener', async function (data) {
-    let id = parseInt(data.id);
-    if (!clients.find((client) => client.socketId === socket.id)) {
-      foued.getUser(id)
-      foued.addUser(id, socket.id)
-      pubClient.set('clients', JSON.stringify(clients));
-      socket.join(socket.id);
-      update_users();
-    }
-  });
-
-
   //Add a user to a room
   socket.on('add-user', function (data) {
     socket.join(data.roomId);
@@ -124,7 +125,6 @@ export const setupChatSocket = function (socket, clients, pubClient, io) {
     update_users()
   });
   function update_users() {
-    console.log("lenna")
     console.log(clients);
     io.emit('users_list', {
       users: clients

@@ -10,7 +10,6 @@ const logger = debug('namespace')
  */
 export const GetMessages = async (req, res) => {
     try {
-
         const result = await message.find();
         if (result.length > 0) {
             res.status(200).json({

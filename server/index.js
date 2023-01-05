@@ -23,9 +23,9 @@ import routerRole from '../server/src/routes/roleRoutes.js'
 import routerMedia from '../server/src/routes/mediaRoutes.js'
 import dbServer from "./DB.js";
 import process from 'node:process';
-
 import redis from 'redis'
 import { createAdapter } from "@socket.io/redis-adapter";
+// import { createClient } from 'redis';
 
 // import redisAdapter from 'socket.io-redis'
 import chatSocket from "./src/controllers/socketController.js";
@@ -67,6 +67,15 @@ const io = new Server(httpServer, {
  *The Promise.all method is used to wait for both the pubClient and subClient to connect to the Redis server before calling the io.adapter method. The createAdapter function is passed the pubClient and subClient as arguments, and returns an adapter that can be used by Socket.IO to communicate with the Redis store.
  * 
  */
+
+
+//  const client = createClient();
+// client.on('error',(err)=>console.log('redis client Error',err))
+// await client.connect()
+// await client.set('key','value')
+// const value = await client.get('key')
+// await client.disconnect()
+
 if (process.env.STATUS === "development") {
   const pubClient = redis.createClient({
     port: process.env.REDIS_PORT,
@@ -77,7 +86,6 @@ if (process.env.STATUS === "development") {
   Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
     io.adapter(createAdapter(pubClient, subClient));
 })
-
   chatSocket(io,pubClient)
 }
 
@@ -128,8 +136,6 @@ app.use("/message", routerMessage)
 app.use("/role", routerRole)
 app.use("/media", routerMedia)
 app.use(cookieParser());
-
-
 
 /* It's a monitoring tool for socket.io. */
 instrument(io, {

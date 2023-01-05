@@ -100,6 +100,7 @@ class clientEvents {
       })
     })
   }
+  
   async getReadMsg(params) {
     socket.on("private message", ({
       content,
